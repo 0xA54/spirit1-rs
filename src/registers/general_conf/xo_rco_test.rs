@@ -1,8 +1,8 @@
 use register_rs::*;
 
+/// `XO_RCO_TEST` register
 #[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0xB4, length = 1)]
-/// `XO_RCO_TEST` register
 pub struct XoRcoTest {
     /// Reserved
     #[register(bits = "4..7", reset = 0b0010)]
