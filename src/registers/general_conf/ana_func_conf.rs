@@ -74,3 +74,12 @@ pub enum FrequencySelect {
     #[valued(true)]
     Freq26,
 }
+
+impl FrequencySelect {
+    pub fn as_float(&self) -> f32 {
+        match self {
+            Self::Freq24 => 24_000_000.0,
+            Self::Freq26 => 26_000_000.0
+        }
+    } 
+}
