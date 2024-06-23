@@ -56,3 +56,12 @@ pub enum CsMode {
     #[valued(3)]
     Dynamic18dB
 }
+
+/// `RSSI_LEVEL` register
+#[derive(Register, ReadableRegister)]
+#[register(address = 0xC8, length = 1)]
+pub struct RssiLevel {
+    /// RSSI level of the received packet
+    #[register(bits = "0..7", reset = 0)]
+    pub rssi_level: u8,
+}
