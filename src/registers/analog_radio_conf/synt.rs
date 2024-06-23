@@ -45,6 +45,21 @@ pub enum BandSelect {
     VeryLow
 }
 
+impl BandSelect {
+    /// Return the frequency band for a given frequency in Hz
+    /// 
+    /// Returns `None` if invalid frequency band
+    pub fn from_hz(frequency: u32) -> Option<Self> {
+        match frequency {
+            149000000..=175100000 => Some(Self::VeryLow),
+            299000000..=349100000 => Some(Self::Low),
+            386000000..=471100000 => Some(Self::Middle),
+            778000000..=957100000 => Some(Self::High),
+            _ => None
+        }
+    }
+}
+
 impl ReadableRegister<u8> for Synt {
     fn from_bytes(buffer: &[u8; Self::LENGTH]) -> RegisterResult<Self> {
         let buffer = u32::from_be_bytes(*buffer);
