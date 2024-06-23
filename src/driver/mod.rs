@@ -45,12 +45,11 @@ where
 
         // Calculates the offset respect to RF frequency and according
         // to xtal_ppm parameter: (xtal_ppm*FBase)/10^6
-        let f_offset = ((opts.xtal_offset_ppm as i32 * self.frequency_base as i32)
+        let f_offset = ((opts.xtal_offset_ppm as i32 * self.base_frequency as i32)
             / od_constants::PPM_FACTOR)
             as i32;
 
         // TODO: Check the parameters are valid
-        // IS_FREQUENCY_BAND
         // IS_MODULATION_SELECTED
         // IS_DATARATE
         // IS_FREQUENCY_OFFSEt
@@ -150,15 +149,6 @@ where
     }
 
 
-    pub fn set_pa_level(&mut self, index: u8, power_dbm: f32) -> RadioResult<()> {
-        if !(index <= 7) || !(power_dbm >= -31.0 && power_dbm <= 12.0) {
-            return Err(RadioError::ParameterError);
-        }
-
-        
-
-        Ok(())
-    }
 }
 
 /// Main radio parameters
