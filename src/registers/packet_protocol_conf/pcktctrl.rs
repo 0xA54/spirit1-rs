@@ -21,50 +21,117 @@ pub struct PcktCtrl4 {
 #[derive(Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x31, length = 1)]
 pub struct PcktCtrl3 {
-    /// PCKT_FRMT bits
-    #[register(bits = "7..6", reset = 0b00)]
-    pub pckt_frmt: u8,
-    /// RX_MODE bits
-    #[register(bits = "5..4", reset = 0b00)]
-    pub rx_mode: u8,
-    /// LEN_WID bits
-    #[register(bits = "3..0", reset = 0b0111)]
+    /// Format of packet (*see Section 9.7*)
+    #[register(bits = "6..7", reset = PacketFormat::Basic)]
+    pub pckt_frmt: PacketFormat,
+    /// `RX_MODE`
+    #[register(bits = "4..5", reset = RxMode::Normal)]
+    pub rx_mode: RxMode,
+    /// Size in number of binary digit of length field 
+    #[register(bits = "0..3", reset = 0b0111)]
     pub len_wid: u8,
+}
+
+/// Before on-the-air transmission, raw data is properly cast into a packet structure. The 
+/// SPIRIT1 offers a highly flexible and fully programmable packet; the structure of the packet, 
+/// the number, the type, and the dimension of the fields inside the packet depend on one of the 
+/// possible configuration settings. Through a suitable register the user can choose the packet 
+/// configuration from three options: STack, WM-Bus, and Basic.
+#[derive(TryValued, Clone, Debug)]
+pub enum PacketFormat {
+    #[valued(0)]
+    Basic,
+    #[valued(1)]
+    WMBus,
+    #[valued(2)]
+    STack,
+}
+
+/// RX Modes
+#[derive(TryValued, Clone, Debug)]
+pub enum RxMode {
+    #[valued(0)]
+    Normal,
+    #[valued(1)]
+    DirectFIFO,
+    #[valued(2)]
+    DirectGPIO
 }
 
 /// `PCKTCTRL2` register
 #[derive(Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x32, length = 1)]
 pub struct PcktCtrl2 {
-    /// PREAMBLE_LENGTH bits
-    #[register(bits = "7..3", reset = 0b00011)]
+    /// Length of preamble field in bytes (from 1 to 32)
+    #[register(bits = "3..7", reset = 0b00011)]
     pub preamble_length: u8,
-    /// SYNC_LENGTH bits
-    #[register(bits = "2..1", reset = 0b11)]
+    /// Length of sync field in bytes (from 1 to 4)
+    #[register(bits = "1..2", reset = 0b11)]
     pub sync_length: u8,
-    /// FIX_VAR_LEN bit
-    #[register(bit = "0", reset = false)]
-    pub fix_var_len: bool,
+    /// Packet length mode
+    #[register(bit = "0", reset = PacketLengthMode::Fixed)]
+    pub fix_var_len: PacketLengthMode,
+}
+
+/// Packet length mode
+#[derive(Valued, Clone, Debug)]
+#[valued(type = bool)]
+pub enum PacketLengthMode {
+    /// Fixed
+    #[valued(false)]
+    Fixed,
+    /// Variable (in variable mode the field 
+    /// `LEN_WID` of `PCKTCTRL3` register must be configured)
+    #[valued(true)]
+    Variable
 }
 
 /// `PCKTCTRL1` register
 #[derive(Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x33, length = 1)]
 pub struct PcktCtrl1 {
-    /// CRC_MODE bits
-    #[register(bits = "7..5", reset = 0b001)]
-    pub crc_mode: u8,
-    /// WHIT_EN bit
+    /// `CRC_MODE`
+    #[register(bits = "5..7", reset = CrcMode::Crc0x07)]
+    pub crc_mode: CrcMode,
+    /// `true`: enable the whitening mode on the data (*see Section 9.6.3*)
     #[register(bit = "4", reset = false)]
     pub whit_en: bool,
-    /// TXSOURCE bits
-    #[register(bits = "3..2", reset = 0b00)]
-    pub tx_source: u8,
+    /// TX source data
+    #[register(bits = "2..3", reset = TxMode::Normal)]
+    pub tx_source: TxMode,
     /// Reserved bit
     #[register(bit = "1", reset = false)]
     _reserved: bool,
-    /// FEC_EN bit
+    /// Enable the FEC encoding in TX or enable 
+    /// the Viterbi decoding in RX (*see Section 9.6.1*)
     #[register(bit = "0", reset = false)]
     pub fec_en: bool,
 }
 
+/// TX Modes
+#[derive(TryValued, Clone, Debug)]
+pub enum TxMode {
+    #[valued(0)]
+    Normal,
+    #[valued(1)]
+    DirectFIFO,
+    #[valued(2)]
+    DirectGPIO,
+    #[valued(3)]
+    PN9
+}
+
+/// CRC Mode
+#[derive(TryValued, Clone, Debug)]
+pub enum CrcMode {
+    #[valued(0)]
+    NoCrc,
+    #[valued(1)]
+    Crc0x07,
+    #[valued(2)]
+    Crc0x8005,
+    #[valued(3)]
+    Crc0x1021,
+    #[valued(4)]
+    Crc0x864CBF
+}
