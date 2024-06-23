@@ -25,13 +25,22 @@
         "CHSPACE",
         "CLKDIV",
         "CSMA",
+        "Datasheet",
         "Gfsk",
         "gpio",
+        "mbus",
         "pckt",
         "pcktctrl",
         "PCKTLEN",
+        "powi",
+        "prescaler",
+        "prmbl",
+        "pstmbl",
+        "Qualif",
         "rssi",
         "SMPS",
-        "Synt"
+        "submode",
+        "Synt",
+        "Viterbi"
     ]
 }

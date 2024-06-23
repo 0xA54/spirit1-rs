@@ -1,8 +1,8 @@
 use register_rs::*;
 
+/// `ANA_FUNC_CONF` register
 #[derive(Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x00, length = 2, endian = "little")]
-/// `ANA_FUNC_CONF` register
 pub struct AnaFuncConf {
     // ANA_FUNC_CONF[0]
     /// Reserved
