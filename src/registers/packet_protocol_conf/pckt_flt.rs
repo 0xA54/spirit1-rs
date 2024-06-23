@@ -44,3 +44,40 @@ pub struct PcktFltGoals {
     #[register(bits = "96..103", reset = 0)]
     pub tx_source_addr: u8,
 }
+
+/// `PCKT_FLT_OPTIONS` register
+#[derive(Register, ReadableRegister, WriteableRegister)]
+#[register(address = 0x4F, length = 1, endian = "little")]
+pub struct PcktFltOptions {
+    /// Reserved
+    #[register(bit = "7", reset = false)]
+    _reserved_0: bool,
+    /// `OR` logical function applied to CS/SQI/PQI values 
+    /// (masked by 7:5 bits in PROTOCOL register: 
+    /// CS_TIMEOUT_MASK, SQI_TIMEOUT_MASK, PQI_TIMEOUT_MASK)
+    #[register(bit = "6", reset = true)]
+    pub rx_timeout_and_or_select: bool,
+    /// RX packet accepted if its control fields match 
+    /// with masked CONTROLx_FIELD registers
+    #[register(bit = "5", reset = true)]
+    pub control_filtering: bool,
+    /// RX packet accepted if its source field matches 
+    /// with masked RX_SOURCE_ADDR register
+    #[register(bit = "4", reset = true)]
+    pub source_filtering: bool,
+    /// RX packet accepted if its destination address 
+    /// matches with TX_SOURCE_ADDR reg.
+    #[register(bit = "3", reset = false)]
+    pub dest_vs_source_addr: bool,
+    /// RX packet accepted if its destination address
+    /// matches with MULTICAST register
+    #[register(bit = "2", reset = false)]
+    pub dest_vs_multicast_addr: bool,
+    /// RX packet accepted if its destination address 
+    /// matches with BROADCAST reg.
+    #[register(bit = "1", reset = false)]
+    pub dest_vs_broadcast_addr: bool,
+    /// Packet discarded if CRC not valid
+    #[register(bit = "0", reset = false)]
+    pub crc_check: bool,
+}
