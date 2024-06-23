@@ -24,7 +24,6 @@
 //! }
 //! ```
 //! 
-// ✅ ❌ 🚧
 //! ## Registers
 //! #### ✅ [General Configuration Registers](general_conf)
 //! |       Register        |    Parent Register    | Integration Status |
