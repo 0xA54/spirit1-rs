@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `PCKTCTRL4` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x30, length = 1)]
 pub struct PcktCtrl4 {
     /// Reserved bits
@@ -18,7 +18,7 @@ pub struct PcktCtrl4 {
 }
 
 /// `PCKTCTRL3` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x31, length = 1)]
 pub struct PcktCtrl3 {
     /// Format of packet (*see Section 9.7*)
@@ -59,7 +59,7 @@ pub enum RxMode {
 }
 
 /// `PCKTCTRL2` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x32, length = 1)]
 pub struct PcktCtrl2 {
     /// Length of preamble field in bytes (from 1 to 32)
@@ -87,7 +87,7 @@ pub enum PacketLengthMode {
 }
 
 /// `PCKTCTRL1` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x33, length = 1)]
 pub struct PcktCtrl1 {
     /// `CRC_MODE`

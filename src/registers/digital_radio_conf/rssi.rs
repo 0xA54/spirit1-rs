@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `RSSI_FLT` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x21, length = 1)]
 pub struct RssiFlt {
     /// Gain of the RSSI filter
@@ -16,7 +16,7 @@ pub struct RssiFlt {
 }
 
 /// `RSSI_TH` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x22, length = 1)]
 pub struct RssiTh {
     /// Signal detect threshold in 0.5 dB steps,

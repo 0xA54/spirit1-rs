@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `PROTOCOL` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x50, length = 3, endian = "big")]
 pub struct Protocol {
     // PROTOCOL[2]

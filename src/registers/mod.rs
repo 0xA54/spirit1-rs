@@ -98,7 +98,7 @@
 //! | TEST_SELECT           | [`TestSelect`]        | ✅ |
 //! | PM_TEST               | [`PmTest`]            | ✅ |
 //! 
-//! #### ❌ [Frequently used registers](frequently_used)
+//! #### ✅ [Frequently used registers](frequently_used)
 //! |       Register        |    Parent Register    | Integration Status |
 //! | --------------------- | --------------------- | ------------------ |
 //! | CHNUM                 | [`ChNum`]             | ✅ |

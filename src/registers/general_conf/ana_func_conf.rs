@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `ANA_FUNC_CONF` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x00, length = 2, endian = "little")]
 pub struct AnaFuncConf {
     // ANA_FUNC_CONF[0]

@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `PA_POWER` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x10, length = 9, endian = "little")]
 pub struct PaPower {
     /// Output power level for the 8th slot (+12 dBm)

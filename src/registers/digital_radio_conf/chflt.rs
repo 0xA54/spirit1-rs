@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `CHFLT` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x1D, length = 1)]
 pub struct ChFlt {
     /// The mantissa value of the channel filter according to *Table 32*

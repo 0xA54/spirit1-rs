@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `IF_OFFSET_DIG` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x0D, length = 1)]
 pub struct IfOffsetDig {
     /// Intermediate frequency setting for the digital shift-to-baseband

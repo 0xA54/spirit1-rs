@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `DEM_CONFIG` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0xA3, length = 1, endian = "little")]
 pub struct DemConfig {
     /// Reserved

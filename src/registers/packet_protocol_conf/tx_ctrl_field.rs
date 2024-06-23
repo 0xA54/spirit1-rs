@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `TX_CTRL_FIELD` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x68, length = 4, endian = "little")]
 pub struct TxCtrlField {
     /// Control field value to be used in TX packet as byte n.3

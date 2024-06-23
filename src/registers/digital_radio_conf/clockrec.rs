@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `CLOCKREC` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x23, length = 1)]
 pub struct ClockRec {
     /// Clock recovery loop gain (log2)

@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `MCU_CK_CONF` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x06, length = 1)]
 pub struct McuCkConf {
     /// The internal divider logic is running, so the MCU clock is 

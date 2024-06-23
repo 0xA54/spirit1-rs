@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `ANT_SELECT_CONF` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x27, length = 1)]
 pub struct AntSelectConf {
     /// Reserved bits

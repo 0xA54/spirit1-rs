@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `VCO_CONFIG` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0xA1, length = 1)]
 pub struct VcoConfig {
     /// Reserved

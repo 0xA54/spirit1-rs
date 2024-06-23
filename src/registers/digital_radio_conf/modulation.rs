@@ -4110,7 +4110,7 @@
 use register_rs::*;
 
 /// `MOD0` & `MOD1` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x1A, length = 2, endian = "little")]
 pub struct Modulation {
     /// Enable the CW transmit mode

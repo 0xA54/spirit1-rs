@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `XO_RCO_CONFIG` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0xA7, length = 1)]
 pub struct XoRcoConfig {
     /// Reserved

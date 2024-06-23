@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `QI` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x3A, length = 1)]
 pub struct QI {
     /// SQI threshold (*see Section 9.10.3*)

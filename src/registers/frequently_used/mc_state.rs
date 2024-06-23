@@ -32,7 +32,7 @@ pub struct McState {
 
 /// SPIRIT1 States.
 /// *See [SPIRIT1](https://www.st.com/resource/en/datasheet/spirit1.pdf) Table 20 for details*
-#[derive(TryValued)]
+#[derive(TryValued, PartialEq)]
 // #[valued(default = Invalid)]
 pub enum SpiritState {
     #[allow(unused)]

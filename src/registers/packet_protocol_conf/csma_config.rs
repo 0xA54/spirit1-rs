@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `CSMA_CONFIG` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0x64, length = 4, endian = "little")]
 pub struct CsmaConfig {
     /// The MSB value of the counter of the seed of the random 
