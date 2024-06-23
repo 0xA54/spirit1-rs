@@ -1,18 +1,59 @@
+//! # SPIRIT1 Radio Interface
+//! **Low data rate, low power sub-1GHz transceiver**
+//! 
+//! The SPIRIT1 is a very low-power RF transceiver, intended for RF wireless applications in 
+//! the sub-1 GHz band. It is designed to operate both in the license-free ISM and SRD 
+//! frequency bands at 169, 315, 433, 868, and 915 MHz, but can also be programmed to 
+//! operate at other additional frequencies in the 300-348 MHz, 387-470 MHz, and 779-956 
+//! MHz bands. The air data rate is programmable from 1 to 500 kbps, and the SPIRIT1 can be 
+//! used in systems with channel spacing of 12.5/25 kHz, complying with the EN 300 220 
+//! standard. It uses a very small number of discrete external components and integrates a 
+//! configurable baseband modem, which supports data management, modulation, and 
+//! demodulation. The data management handles the data in the proprietary fully 
+//! programmable packet format also allows the M-Bus standard compliance format (all 
+//! performance classes). 
+//! 
+//! However, the SPIRIT1 can perform cyclic redundancy checks on the data as well as FEC 
+//! encoding/decoding on the packets. The SPIRIT1 provides an optional automatic 
+//! acknowledgement, retransmission, and timeout protocol engine in order to reduce overall 
+//! system costs by handling all the high-speed link layer operations.
+//! 
+//! Moreover, the SPIRIT1 supports an embedded CSMA/CA engine. An AES 128-bit 
+//! encryption co-processor is available for secure data transfer. The SPIRIT1 fully supports 
+//! antenna diversity with an integrated antenna switching control algorithm. The SPIRIT1 
+//! supports different modulation schemes: 2-FSK, GFSK, OOK, ASK, and MSK. 
+//! Transmitted/received data bytes are buffered in two different three-level FIFOs (TX FIFO 
+//! and RX FIFO), accessible via the SPI interface for host processing.
+//! 
+//! *Link: [SPIRIT1 Datasheet](https://www.st.com/resource/en/datasheet/spirit1.pdf)*
+//! 
+//! ## Usage
+//! ```
+//! // TODO
+//! ```
+
+
 #![no_std]
 // Nightly! We use generic const expressions for this driver!
 #![feature(generic_const_exprs)]
 
-use prelude::*;
 use embedded_hal::spi::*;
+use prelude::registers::BandSelect;
 use register_rs::*;
 
 pub mod registers;
+mod driver;
+pub use driver::*;
+
+pub mod constants;
+
 
 /// Prelude
 pub mod prelude {
     // pub use crate::registers::prelude::*;
-    pub use crate::registers::prelude_type::*;
-    pub use super::Spirit1;
+    pub use super::*;
+    pub use registers::*;
+    pub use register_rs::Register;
     pub use embedded_hal::spi::SpiDevice;
 }
 
@@ -23,7 +64,18 @@ where
 {
     /// SPI Device instance
     spi: SPI,
-    shutdown: Option<()>, // TODO
+    shutdown: Option<()>, // TODO,
+    /// The crystal frequency
+    xtal_frequency: u32,
+    /// Specifies the base carrier frequency (in Hz),
+    /// i.e. the carrier frequency of channel #0.
+    ///
+    /// This parameter can be in one of the following ranges:
+    /// - `High_Band`: from 779 MHz to 915 MHz
+    /// - `Middle Band`: from 387 MHz to 470 MHz
+    /// - `Low Band`: from 300 MHz to 348 MHz
+    pub base_frequency: u32,
+    frequency_band: BandSelect
 }
 
 /// Error
@@ -32,9 +84,13 @@ pub enum RadioError {
     /// SpiDevice Error
     Spi,
     Invalid,
+    /// Parameters supplied resulted in run-time checks failing
+    ParameterError
 }
 
+/// Radio result
 pub type RadioResult<T> = Result<T, RadioError>;
+/// SPIRIT1 Word Size (u8)
 type WORD = u8;
 
 impl<SPI> Spirit1<SPI>
@@ -45,10 +101,21 @@ where
     pub const SPI_MODE: Mode = MODE_0;
 
     /// Create new instance of SPIRIT1 radio driver
-    pub fn new(spi: SPI) -> Self {
-        Self {
-            spi,
-            shutdown: None,
+    /// 
+    /// Returns `None` if invalid parameters were specified
+    pub fn new(spi: SPI, xtal_frequency: u32, frequency_base: u32) -> Option<Self> {
+        let frequency_band = BandSelect::from_hz(frequency_base);
+        
+        if let Some(frequency_band) = frequency_band {
+            Some(Self {
+                spi,
+                shutdown: None,
+                xtal_frequency,
+                base_frequency: frequency_base,
+                frequency_band
+            })
+        } else {
+            None
         }
     }
 
@@ -67,6 +134,11 @@ where
         R: Register<WORD> + WriteableRegister<WORD>,
     {
         // TODO: Implement
+        Err(RadioError::Invalid)
+    }
+
+    pub fn write_raw<WORD>(&mut self, base: WORD, value: &[WORD]) -> RadioResult<()> {
+        // TODO
         Err(RadioError::Invalid)
     }
 }
