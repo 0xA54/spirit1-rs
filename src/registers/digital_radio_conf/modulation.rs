@@ -4116,11 +4116,11 @@ pub struct Modulation {
     /// Enable the CW transmit mode
     #[register(bit = "15", reset = false)]
     pub cw_enable: bool,
-    /// Select BT value for GFSK
-    #[register(bit = "14", reset = BtSelect::Bt1)]
-    pub bt_select: BtSelect,
+    // /// Select BT value for GFSK
+    // #[register(bit = "14", reset = BtSelect::Bt1)]
+    // pub bt_select: BtSelect,
     /// Modulation type
-    #[register(bits = "12..13", reset = ModulationType::Gfsk)]
+    #[register(bits = "12..14", reset = ModulationType::GfskBt1)]
     pub mod_type: ModulationType,
     /// The exponent value of the data rate equation
     #[register(bits = "8..11", reset = 0b1010)]
@@ -4133,39 +4133,65 @@ pub struct Modulation {
 
 // TODO: Implement compile time lookup of `e` and `m` values
 
-// impl Modulation {
-//     fn new(
-//         cw_enable: bool,
-//         bt_select: BtSelect,
-//         mod_type: ModulationType,
-//         data_rate: f32,
-//         frequency: FrequencySelect,
-//     ) -> RadioResult<Self> {
-//         let clk_freq = frequency.as_float();
+impl Modulation {
+    // Icky
+    /// Returns the mantissa and exponent
+    pub fn calculate_data_rate(data_rate: u32, pd_clkdiv: bool, xtal_frequency: u32) -> (u8, u8) {
+        let mut found = false;
+        let divider = pd_clkdiv as i8;
 
-//         // Check - data_rate_m is inherently in bound
-//         if data_rate_e > 15 {
-//             return Err(RadioError::ParameterError);
-//         }
+        let mut i: i8 = 15;
+        while !found && i >= 0 {
+            if data_rate >= ( xtal_frequency >> (20 - i + divider) ) {
+                found = true;
+            } else {
+                i -= 1;
+            }
+        }
 
-//         Ok(Self {
-//             cw_enable,
-//             bt_select,
-//             mod_type,
-//             data_rate_e,
-//             data_rate_m,
-//         })
-//     }
-// }
+        i = i.max(0);
+
+        // Calculate the mantissa
+        let mantissa: u8 = (( data_rate * ( (1 as u32) << (23 - i) )) / ( xtal_frequency >> (5 + divider)) - 256) as u8;
+        let mut mantissa_calculation: [i16; 3] = [0; 3];
+
+        for j in 0..3 {
+            if mantissa + j - 1 == 1 {
+                mantissa_calculation[j as usize] = (data_rate - ( ( ( 256 + mantissa as u32 + j as u32 - 1 )  * ( xtal_frequency >> (5 + divider) ) ) >> ( 23 - i )) as u32 ) as i16;
+            } else {
+                mantissa_calculation[j as usize] = 0x7FFF;
+            }
+        }
+
+        let mut mantissa_delta: u16 = 0xFFFF;
+        let mut m = 0;
+
+        for j in 0..3 {
+            if (mantissa_calculation[j].abs() as u16) < mantissa_delta {
+                mantissa_delta = mantissa_calculation[j].abs() as u16;
+                m = mantissa + j as u8 - 1;
+            }
+        }
+
+        (m, i as u8)
+    }
+}
 
 #[derive(TryValued, Clone, Debug)]
 pub enum ModulationType {
+    /// 2-FSK modulation selected
     #[valued(0)]
     Fsk2,
+    /// GFSK modulation selected with BT=0.5
+    #[valued(5)]
+    GfskBt0p5,
+    /// GFSK modulation selected with BT=1
     #[valued(1)]
-    Gfsk,
+    GfskBt1,
+    /// ASK or OOK modulation selected. ASK will use power ramping
     #[valued(2)]
     AskOok,
+    /// MSK modulation selected
     #[valued(3)]
     Msk,
 }

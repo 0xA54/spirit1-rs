@@ -27,7 +27,7 @@ pub struct FcOffset {
 }
 
 impl FcOffset {
-    pub fn new(fc_offset: u16) -> Self {
+    pub fn new(fc_offset: i16) -> Self {
         let bytes = fc_offset.to_be_bytes();
 
         Self {
