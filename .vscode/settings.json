@@ -21,13 +21,16 @@
     "peacock.color": "#0d4b29",
     "cSpell.words": [
         "baseband",
+        "CALIBR",
         "chflt",
         "CHSPACE",
         "CLKDIV",
         "CSMA",
         "Datasheet",
+        "fdev",
         "Gfsk",
         "gpio",
+        "Kbps",
         "mbus",
         "pckt",
         "pcktctrl",
@@ -41,6 +44,7 @@
         "SMPS",
         "submode",
         "Synt",
-        "Viterbi"
+        "Viterbi",
+        "xtal"
     ]
 }

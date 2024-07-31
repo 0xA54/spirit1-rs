@@ -40,6 +40,15 @@ pub struct GpioConf {
     pub gpio_mode: GpioMode,
 }
 
+impl GpioConf {
+    pub fn new(mode: GpioMode) -> Self {
+        Self {
+            gpio_mode: mode,
+            ..Default::default()
+        }
+    }
+}
+
 /// `GPIO0_CONF` register
 ///
 /// Default: Power on reset signal
@@ -63,6 +72,8 @@ impl GpioConf {
     fn from_bytes(buffer: &[u8; 1]) -> RegisterResult<Self> {
         let mode_bits = buffer[0].bits(0..=1);
         let select_bits = buffer[0].bits(3..=7);
+        // let mode_bits = buffer[0].bits(0b11, 0);
+        // let select_bits = buffer[0].bits(0b1111_1000, 3);
 
         Ok(Self {
             _reserved_2: buffer[0].bit(2),
@@ -77,6 +88,10 @@ impl GpioConf {
         word.set_bits(0..=1, mode_bits);
         word.set_bit(2, self._reserved_2);
         word.set_bits(3..=7, select_bits);
+
+        // word.set_mask(0b11 & mode_bits);
+        // word.set_mask(0b100 & self._reserved_2 as u8);
+        // word.set_mask(0b1111_1000 & select_bits);
 
         Ok([word])
     }

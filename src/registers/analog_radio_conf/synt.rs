@@ -21,7 +21,7 @@ pub struct Synt {
 }
 
 /// Synthesizer band select factor as described in `Equation 5`
-#[derive(TryValued, Clone)]
+#[derive(Debug, TryValued, Clone)]
 pub enum BandSelect {
     /// High band (from 779MHz to 956MHz)
     /// 
@@ -68,6 +68,9 @@ impl ReadableRegister<u8> for Synt {
             wcp: buffer.bits(29..=31) as u8,
             synt: buffer.bits(3..=28),
             band_select: (buffer.bits(0..=2) as u8).try_into()?
+            // wcp: buffer.bits(0b11100000_00000000_00000000_00000000, 29) as u8,
+            // synt: buffer.bits(0b00011111_11111111_11111111_11111000, 3),
+            // band_select: (buffer.bits(0b111, 0) as u8).try_into()?
         })
     }
 }
@@ -78,11 +81,14 @@ impl WriteableRegister<u8> for Synt {
 
         let mut word: u32 = 0;
         word.set_bits(29..=31, self.wcp.into());
+        // word |= Into::<u32>::into(self.wcp) << 29;
         word.set_bits(3..=28, self.synt);
+        // word |= (Into::<u32>::into(self.synt) & 0b11111111111111111111111111) << 3;
         word.set_bits(0..=2, {
             let coerced: u8 = self.band_select.clone().try_into()?;
             coerced as u32
         });
+        // word |= TryInto::<u8>::try_into(self.band_select.clone())? as u32 & 0b11;
 
         buffer[0] = ((word & 0xFF000000) >> 24) as u8;
         buffer[1] = ((word & 0xFF0000) >> 16) as u8;

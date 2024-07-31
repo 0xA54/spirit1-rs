@@ -122,7 +122,7 @@ pub enum TxMode {
 }
 
 /// CRC Mode
-#[derive(TryValued, Clone, Debug)]
+#[derive(TryValued, Clone, Debug, PartialEq)]
 pub enum CrcMode {
     #[valued(0)]
     NoCrc,

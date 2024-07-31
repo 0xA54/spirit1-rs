@@ -37,7 +37,8 @@
 // Nightly! We use generic const expressions for this driver!
 #![feature(generic_const_exprs)]
 
-use embedded_hal::spi::*;
+// use embedded_hal::spi::*;
+// use embedded_hal::digital::v2::InputPin;
 use prelude::registers::BandSelect;
 use register_rs::*;
 
@@ -53,30 +54,41 @@ pub mod prelude {
     // pub use crate::registers::prelude::*;
     pub use super::*;
     pub use registers::*;
-    pub use register_rs::Register;
-    pub use embedded_hal::spi::SpiDevice;
+    pub use register_rs::{ReadableRegister, WriteableRegister, Register};
+    // pub use embedded_hal::spi::FullDuplex as SpiDevice;
+    // pub use embedded_hal::digital::v2::InputPin;
+
+    // pub type Spirit1Driver = Spirit1<dyn SpiDevice<u8>, dyn InputPin>;
 }
 
-/// # SPIRIT1 Radio Driver
-pub struct Spirit1<SPI>
-where
-    SPI: SpiDevice,
-{
-    /// SPI Device instance
-    spi: SPI,
-    shutdown: Option<()>, // TODO,
-    /// The crystal frequency
-    xtal_frequency: u32,
-    /// Specifies the base carrier frequency (in Hz),
-    /// i.e. the carrier frequency of channel #0.
-    ///
-    /// This parameter can be in one of the following ranges:
-    /// - `High_Band`: from 779 MHz to 915 MHz
-    /// - `Middle Band`: from 387 MHz to 470 MHz
-    /// - `Low Band`: from 300 MHz to 348 MHz
-    pub base_frequency: u32,
-    frequency_band: BandSelect
-}
+// use prelude::SpiDevice;
+
+// /// # SPIRIT1 Radio Driver
+// pub struct Spirit1<SPI, Input>
+// where
+//     SPI: SpiDevice<u8>,
+//     Input: InputPin
+// {
+//     /// SPI Device instance
+//     spi: SPI,
+//     shutdown: Option<()>, // TODO,
+//     /// The crystal frequency
+//     xtal_frequency: u32,
+//     /// Specifies the base carrier frequency (in Hz),
+//     /// i.e. the carrier frequency of channel #0.
+//     ///
+//     /// This parameter can be in one of the following ranges:
+//     /// - `High_Band`: from 779 MHz to 915 MHz
+//     /// - `Middle Band`: from 387 MHz to 470 MHz
+//     /// - `Low Band`: from 300 MHz to 348 MHz
+//     pub base_frequency: u32,
+//     frequency_band: BandSelect,
+//     interrupt_pin: Input
+// }
+
+// pub struct Spirit1();
+
+pub trait Spirit1: Spirit1Hal + SpiritPacketFormats + Spirit1Driver + SpiritIrq {}
 
 /// Error
 #[derive(Clone, Copy, Debug)]
@@ -85,7 +97,27 @@ pub enum RadioError {
     Spi,
     Invalid,
     /// Parameters supplied resulted in run-time checks failing
-    ParameterError
+    ParameterError,
+    /// Yeah haven't got to that yet
+    NotImplemented
+}
+
+impl From<RegisterError> for RadioError {
+    fn from(value: RegisterError) -> Self {
+        match value {
+            _ => Self::ParameterError
+        }
+    }
+}
+
+pub trait Spirit1Hal {
+    fn read_register<R>(&mut self) -> R where R: Register<WORD> + ReadableRegister<WORD>, [(); R::LENGTH]: Sized,;
+    fn write_register<R>(&mut self, value: R) -> RadioResult<()> where R: WriteableRegister<WORD>, [(); R::LENGTH]: Sized;
+    fn write_raw(&mut self, base: u8, value: &mut [u8]) -> RadioResult<()>;
+    fn get_xtal_frequency(&self) -> u32;
+    fn get_base_frequency(&self) -> u32;
+    fn get_frequency_band(&self) -> BandSelect;
+
 }
 
 /// Radio result
@@ -93,52 +125,62 @@ pub type RadioResult<T> = Result<T, RadioError>;
 /// SPIRIT1 Word Size (u8)
 type WORD = u8;
 
-impl<SPI> Spirit1<SPI>
-where
-    SPI: SpiDevice,
-{
-    /// SPIRIT1 SPI Mode
-    pub const SPI_MODE: Mode = MODE_0;
+// impl<SPI, Input> Spirit1<SPI, Input>
+// where
+//     SPI: SpiDevice<u8>,
+//     Input: InputPin
+// {
+//     /// SPIRIT1 SPI Mode
+//     pub const SPI_MODE: Mode = MODE_0;
 
-    /// Create new instance of SPIRIT1 radio driver
-    /// 
-    /// Returns `None` if invalid parameters were specified
-    pub fn new(spi: SPI, xtal_frequency: u32, frequency_base: u32) -> Option<Self> {
-        let frequency_band = BandSelect::from_hz(frequency_base);
+//     /// Create new instance of SPIRIT1 radio driver
+//     /// 
+//     /// Returns `None` if invalid parameters were specified
+//     pub fn new(spi: SPI, irq_pin: Input, xtal_frequency: u32, frequency_base: u32) -> Option<Self> {
+//         let frequency_band = BandSelect::from_hz(frequency_base);
         
-        if let Some(frequency_band) = frequency_band {
-            Some(Self {
-                spi,
-                shutdown: None,
-                xtal_frequency,
-                base_frequency: frequency_base,
-                frequency_band
-            })
-        } else {
-            None
-        }
-    }
+//         if let Some(frequency_band) = frequency_band {
+//             Some(Self {
+//                 spi,
+//                 shutdown: None,
+//                 xtal_frequency,
+//                 base_frequency: frequency_base,
+//                 frequency_band,
+//                 interrupt_pin: irq_pin,
+//             })
+//         } else {
+//             None
+//         }
+//     }
 
-    pub fn read_register<R>(&mut self) -> R
-    where
-        R: Register<WORD> + ReadableRegister<WORD>,
-    {
-        // TODO: Implement
-        // R::from_bytes(buffer)
+//     pub fn read_register<R>(&mut self) -> R
+//     where
+//         R: Register<WORD> + ReadableRegister<WORD>,
+//     {
+//         // TODO: Implement
+//         // R::from_bytes(buffer)
 
-        R::reset_value()
-    }
+//         R::reset_value()
+//     }
 
-    pub fn write_register<R>(&mut self, value: R) -> RadioResult<()>
-    where
-        R: Register<WORD> + WriteableRegister<WORD>,
-    {
-        // TODO: Implement
-        Err(RadioError::Invalid)
-    }
+//     pub fn write_register<R>(&mut self, value: R) -> RadioResult<()>
+//     where
+//         R: Register<WORD> + WriteableRegister<WORD>,
+//     {
+//         // TODO: Implement
+//         Err(RadioError::NotImplemented)
+//     }
 
-    pub fn write_raw<WORD>(&mut self, base: WORD, value: &[WORD]) -> RadioResult<()> {
-        // TODO
-        Err(RadioError::Invalid)
-    }
-}
+//     // pub fn write_registers<R>(&mut self, value: &[R]) -> RadioResult<()>
+//     // where
+//     //     R: Register<WORD> + WriteableRegister<WORD>,
+//     // {
+//     //     // TODO: Implement
+//     //     Err(RadioError::NotImplemented)
+//     // }
+
+//     pub fn write_raw<WORD>(&mut self, base: WORD, value: &[WORD]) -> RadioResult<()> {
+//         // TODO
+//         Err(RadioError::NotImplemented)
+//     }
+// }

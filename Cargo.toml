@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-embedded-hal = { version = "=1.0.0-alpha.10" }
+# embedded-hal = { version = "1.0.0" }
 defmt = { version = "0.3" }
 register-rs = { path = "../register-rs" }

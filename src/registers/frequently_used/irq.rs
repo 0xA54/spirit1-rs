@@ -37,6 +37,39 @@ impl IrqMask {
     }
 }
 
+pub struct IrqMaskBuilder(u32);
+
+impl IrqMaskBuilder {
+    pub fn new() -> Self {
+        Self(0)
+    }
+
+    /// Set 
+    pub fn set(&mut self, event: InterruptEvent) -> &mut Self {
+        let mask: u32 = event.try_into().unwrap();
+
+        self.0 |= mask;
+
+        self
+    }
+
+    // fn remove(&mut self, event: InterruptEvent) {
+
+    // }
+}
+
+// impl Into<IrqMask> for IrqMaskBuilder {
+//     fn into(self) -> IrqMask {
+//         IrqMask::new(self.0)
+//     }
+// }
+
+impl From<IrqMaskBuilder> for IrqMask {
+    fn from(value: IrqMaskBuilder) -> Self {
+        Self::new(value.0)
+    }
+}
+
 /// `IRQ_STATUS` register. Read & Reset type register
 #[derive(Register, ReadableRegister)]
 #[register(address = 0xFA, length = 4, endian = "big")]
@@ -69,7 +102,8 @@ pub trait IrqType {
         let word = self.as_u32();
         let pos: u32 = event.try_into().unwrap();
 
-        word.bit(pos)
+        // word.bit(pos)
+        word & pos > 1
     }
 }
 
@@ -109,58 +143,59 @@ impl IrqType for IrqStatus {
 #[derive(TryValued)]
 #[valued(type = u32)]
 pub enum InterruptEvent {
-    #[valued(0)]
+    #[valued(0x00000001)]
     RxDataReady,
-    #[valued(1)]
+    #[valued(0x00000002)]
     RxDataDiscarded,
-    #[valued(2)]
+    #[valued(0x00000004)]
     TxDataSent,
-    #[valued(3)]
+    #[valued(0x00000008)]
     MaxReTxReached,
-    #[valued(4)]
+    #[valued(0x00000010)]
     CrcError,
-    #[valued(5)]
+    #[valued(0x00000020)]
     TxFifoError,
-    #[valued(6)]
+    #[valued(0x00000040)]
     RxFifoError,
-    #[valued(7)]
+    #[valued(0x00000080)]
     TxFifoAlmostFull,
-    #[valued(8)]
+    #[valued(0x00000100)]
     TxFifoAlmostEmpty,
-    #[valued(9)]
+    #[valued(0x00000200)]
     RxFifoAlmostFull,
-    #[valued(10)]
+    #[valued(0x00000400)]
     RxFifoAlmostEmpty,
-    #[valued(11)]
+    #[valued(0x00000800)]
     MaxBackoffDuringCCA,
-    #[valued(12)]
+    #[valued(0x00001000)]
     ValidPreambleDetected,
-    #[valued(13)]
+    #[valued(0x00002000)]
     SyncWordDetected,
-    #[valued(14)]
+    #[valued(0x00004000)]
     RssiAboveThreshold,
     /// The interrupt flag n.15 is set (and consequently the interrupt request) only when the XO clock is 
     /// available for the state machine. This time may be delayed compared to the actual timer 
     /// expiration. However, the real time event can be sensed putting the end-of-counting signal on a 
     /// GPIO output.
-    #[valued(15)]
+    #[valued(0x00008000)]
     WakeUpTimeout,
     /// The interrupt flag n.16 is set each time the SPIRIT1 goes to READY state and the XO has 
     /// completed its setting transient (XO ready condition detected).
-    #[valued(16)]
+    #[valued(0x00010000)]
     Ready,
-    #[valued(17)]
+    #[valued(0x00020000)]
     StandbyStateSwitching,
-    #[valued(18)]
+    #[valued(0x00040000)]
     LowBatteryLevel,
-    #[valued(19)]
+    #[valued(0x00080000)]
     PowerOnReset,
-    #[valued(20)]
+    #[valued(0x00100000)]
     BrownoutEvent,
-    #[valued(21)]
+    #[valued(0x00200000)]
     Lock,
-    #[valued(29)]
+    #[valued(0x20000000)]
     TimerRxTimeout,
-    #[valued(30)]
+    #[valued(0x40000000)]
     OthersAesEndOfOperation,
+    // THERE ARE SOME DEBUG ONES TOO...
 }

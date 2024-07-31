@@ -47,6 +47,7 @@ impl RcoVcoCalibrIn {
     fn new(rwt_in: u8, rfb_in: u8, vco_calibr_tx: u8, vco_calibr_rx: u8) -> Self {        
         Self {
             rfb_in_msb: rfb_in.bits(1..=4),
+            // rfb_in_msb: rfb_in.bits(0b1_1110, 1),
             rfb_in_lsb: rfb_in.bit(0).into(),
             rwt_in,
             vco_calibr_tx,
@@ -86,6 +87,8 @@ impl RcoVcoCalibrOut {
         let mut word = 0;
         word.set_bits(1..4, self.rfb_out_msb);
         word.set_bit(0, self.rfb_out_lsb);
+        // word.set_mask((self.rfb_out_msb << 1) & 0b1_1110);
+        // word.set_mask(self.rfb_out_lsb as u8);
 
         word
     }

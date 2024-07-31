@@ -45,8 +45,11 @@ impl ChFlt {
         }
 
         Self {
-            chflt_m: ((89 - idx) % 9) as u8,
-            chflt_e: ((89 - idx) / 9) as u8
+            // FIXME: Check correctness. 89 results in underflow (obviously)
+            // chflt_m: ((89 - idx) % 9) as u8,
+            // chflt_e: ((89 - idx) / 9) as u8
+            chflt_m: ((90 - idx) % 9) as u8,
+            chflt_e: ((90 - idx) / 9) as u8
         }
     }
 

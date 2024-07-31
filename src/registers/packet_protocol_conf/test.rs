@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `TEST_SELECT` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, NewExpandedPrivate, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0xA8, length = 1)]
 pub struct TestSelect {
     /// Reserved
@@ -10,7 +10,7 @@ pub struct TestSelect {
 }
 
 /// `PM_TEST` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, NewExpandedPrivate, Register, ReadableRegister, WriteableRegister)]
 #[register(address = 0xB2, length = 1)]
 pub struct PmTest {
     /// Reserved
