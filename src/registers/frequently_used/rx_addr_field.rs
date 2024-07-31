@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `RX_ADDR_FIELD` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xD2, length = 2, endian = "little")]
 pub struct RxAddrField {
     // RX_ADDR_FIELD[1]

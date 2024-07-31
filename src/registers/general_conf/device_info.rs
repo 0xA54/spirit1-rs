@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `DEVICE_INFO` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xF0, length = 2, endian = "little")]
 pub struct DeviceInfo {
     /// Device Part number

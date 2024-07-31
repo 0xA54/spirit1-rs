@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `CHNUM` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x6C, length = 1)]
 pub struct ChNum {
     /// Channel number. This value is multiplied by the channel 

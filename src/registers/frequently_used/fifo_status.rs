@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `LINEAR_FIFO_STATUS` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xE6, length = 2, endian = "little")]
 pub struct LinearFifoStatus {
     // LINEAR_FIFO_STATUS[1]

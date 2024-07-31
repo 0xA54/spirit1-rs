@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `XO_RCO_TEST` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0xB4, length = 1)]
 pub struct XoRcoTest {
     /// Reserved

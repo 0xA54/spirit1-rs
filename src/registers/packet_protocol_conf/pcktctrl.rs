@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `PCKTCTRL4` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x30, length = 1)]
 pub struct PcktCtrl4 {
     /// Reserved bits
@@ -18,7 +18,7 @@ pub struct PcktCtrl4 {
 }
 
 /// `PCKTCTRL3` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x31, length = 1)]
 pub struct PcktCtrl3 {
     /// Format of packet (*see Section 9.7*)
@@ -37,7 +37,7 @@ pub struct PcktCtrl3 {
 /// the number, the type, and the dimension of the fields inside the packet depend on one of the 
 /// possible configuration settings. Through a suitable register the user can choose the packet 
 /// configuration from three options: STack, WM-Bus, and Basic.
-#[derive(TryValued, Clone, Debug)]
+#[derive(TryValued, Clone, Debug, defmt::Format)]
 pub enum PacketFormat {
     #[valued(0)]
     Basic,
@@ -48,7 +48,7 @@ pub enum PacketFormat {
 }
 
 /// RX Modes
-#[derive(TryValued, Clone, Debug)]
+#[derive(TryValued, Clone, Debug, defmt::Format)]
 pub enum RxMode {
     #[valued(0)]
     Normal,
@@ -59,7 +59,7 @@ pub enum RxMode {
 }
 
 /// `PCKTCTRL2` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x32, length = 1)]
 pub struct PcktCtrl2 {
     /// Length of preamble field in bytes (from 1 to 32)
@@ -74,7 +74,7 @@ pub struct PcktCtrl2 {
 }
 
 /// Packet length mode
-#[derive(Valued, Clone, Debug)]
+#[derive(Valued, Clone, Debug, defmt::Format)]
 #[valued(type = bool)]
 pub enum PacketLengthMode {
     /// Fixed
@@ -87,7 +87,7 @@ pub enum PacketLengthMode {
 }
 
 /// `PCKTCTRL1` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x33, length = 1)]
 pub struct PcktCtrl1 {
     /// `CRC_MODE`
@@ -109,7 +109,7 @@ pub struct PcktCtrl1 {
 }
 
 /// TX Modes
-#[derive(TryValued, Clone, Debug)]
+#[derive(TryValued, Clone, Debug, defmt::Format)]
 pub enum TxMode {
     #[valued(0)]
     Normal,
@@ -122,7 +122,7 @@ pub enum TxMode {
 }
 
 /// CRC Mode
-#[derive(TryValued, Clone, Debug, PartialEq)]
+#[derive(TryValued, Clone, Debug, defmt::Format, PartialEq)]
 pub enum CrcMode {
     #[valued(0)]
     NoCrc,

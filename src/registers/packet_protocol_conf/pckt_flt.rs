@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `PCKT_FLT_GOALS` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x42, length = 13, endian = "little")]
 pub struct PcktFltGoals {
     ///  For received packet only: all 0s: no filtering on control field
@@ -46,7 +46,7 @@ pub struct PcktFltGoals {
 }
 
 /// `PCKT_FLT_OPTIONS` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x4F, length = 1, endian = "little")]
 pub struct PcktFltOptions {
     /// Reserved

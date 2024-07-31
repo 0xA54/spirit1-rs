@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `IRQ_MASK` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x90, length = 4, endian = "big")]
 pub struct IrqMask {
     // IRQ_MASK[3]
@@ -71,7 +71,7 @@ impl From<IrqMaskBuilder> for IrqMask {
 }
 
 /// `IRQ_STATUS` register. Read & Reset type register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xFA, length = 4, endian = "big")]
 pub struct IrqStatus {
     // IRQ_STATUS[3]

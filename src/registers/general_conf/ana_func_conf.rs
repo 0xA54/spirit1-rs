@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `ANA_FUNC_CONF` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x00, length = 2, endian = "little")]
 pub struct AnaFuncConf {
     // ANA_FUNC_CONF[0]
@@ -42,7 +42,7 @@ pub struct AnaFuncConf {
     pub temperature_sensor: bool,
 }
 
-#[derive(TryValued, Clone, Copy, Debug)]
+#[derive(TryValued, Clone, Copy, Debug, defmt::Format)]
 pub enum BrownoutLevelThreshold {
     #[valued(0b00)]
     Set2v7,
@@ -55,7 +55,7 @@ pub enum BrownoutLevelThreshold {
 }
 
 
-#[derive(Valued, Clone, Copy, Debug)]
+#[derive(Valued, Clone, Copy, Debug, defmt::Format)]
 #[valued(type = bool)]
 pub enum ReferenceSignal {
     /// Reference signal from XO circuit
@@ -66,7 +66,7 @@ pub enum ReferenceSignal {
     XIN,
 }
 
-#[derive(Valued, Clone, Copy, Debug)]
+#[derive(Valued, Clone, Copy, Debug, defmt::Format)]
 #[valued(type = bool)]
 pub enum FrequencySelect {
     #[valued(false)]

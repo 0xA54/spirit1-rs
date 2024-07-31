@@ -17,7 +17,7 @@ macro_rules! from_dbm {
 }
 
 /// Output power level for the 8th slot (+12 dBm)
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x10, length = 1)]
 pub struct PaPower8 {
     /// Output power level for the 8th slot (+12 dBm)
@@ -33,7 +33,7 @@ impl PaPower8 {
 }
 
 /// Output power level for the 7th slot (+6 dBm)
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x11, length = 1)]
 pub struct PaPower7 {    
     /// Output power level for the 7th slot (+6 dBm)
@@ -49,7 +49,7 @@ impl PaPower7 {
 }
 
 /// Output power level for the 6th slot (0 dBm)
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x12, length = 1)]
 pub struct PaPower6 {    
     /// Output power level for the 6th slot (0 dBm)
@@ -65,7 +65,7 @@ impl PaPower6 {
 }
 
 /// Output power level for the 5th slot (-6 dBm)
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x13, length = 1)]
 pub struct PaPower5 {    
     /// Output power level for the 5th slot (-6 dBm)
@@ -81,7 +81,7 @@ impl PaPower5 {
 }
 
 /// Output power level for the 4th slot (-12 dBm)
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x14, length = 1)]
 pub struct PaPower4 {    
     /// Output power level for the 4th slot (-12 dBm)
@@ -97,7 +97,7 @@ impl PaPower4 {
 }
 
 /// Output power level for the 3rd slot (-18 dBm)
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x15, length = 1)]
 pub struct PaPower3 {    
     /// Output power level for the 3rd slot (-18 dBm)
@@ -113,7 +113,7 @@ impl PaPower3 {
 }
 
 /// Output power level for the 2nd slot (-24 dBm)
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x16, length = 1)]
 pub struct PaPower2 {    
     /// Output power level for the 2nd slot (-24 dBm)
@@ -129,7 +129,7 @@ impl PaPower2 {
 }
 
 /// Output power level for the first slot (-30 dBm)
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x17, length = 1)]
 pub struct PaPower1 {    
     /// Output power level for the first slot (-30 dBm)
@@ -188,7 +188,7 @@ fn pa_power_from_dbm(slot: PaSlot, power_dbm: f32, base_frequency: u32) -> Optio
 }
 
 /// `PA_POWER[0]` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x18, length = 1)]
 pub struct PaPower {
     /// Output stage additional load capacitors bank
@@ -207,7 +207,7 @@ pub struct PaPower {
 
 /// Output stage additional load capacitors bank
 /// (to be used to optimize the PA for different sub-bands)
-#[derive(TryValued, Clone, Debug)]
+#[derive(TryValued, Clone, Debug, defmt::Format)]
 pub enum AdditionalLoadCapacitors {
     /// 0pF
     #[valued(0b00)]
@@ -224,7 +224,7 @@ pub enum AdditionalLoadCapacitors {
 }
 
 /// Power Amplifier Slots
-#[derive(TryValued, Clone, Debug)]
+#[derive(TryValued, Clone, Debug, defmt::Format)]
 pub enum PaSlot {
     #[valued(0)]
     Slot1,

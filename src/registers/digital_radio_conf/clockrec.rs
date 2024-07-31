@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `CLOCKREC` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x23, length = 1)]
 pub struct ClockRec {
     /// Clock recovery loop gain (log2)
@@ -15,7 +15,7 @@ pub struct ClockRec {
     pub clk_rec_i_gain: u8,
 }
 
-#[derive(Valued, Clone, Debug)]
+#[derive(Valued, Clone, Debug, defmt::Format)]
 #[valued(type = bool)]
 pub enum PostFilterLen {
     #[valued(false)]

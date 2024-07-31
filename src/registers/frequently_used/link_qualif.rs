@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `LINK_QUALIF` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xC5, length = 3, endian = "little")]
 pub struct LinkQualif {
     // LINK_QUALIF[2]

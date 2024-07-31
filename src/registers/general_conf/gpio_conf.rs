@@ -107,7 +107,7 @@ impl Default for GpioConf {
 }
 
 /// Gpio Configuration Modes
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, defmt::Format)]
 pub enum GpioMode {
     /// **Note: Only supported on `GPIO0`!** See [`GpioConf`]
     Analog,
@@ -128,7 +128,7 @@ impl Into<GpioConf> for GpioMode {
 /// GPIO Digital Input Selection (`GPIOx_CONF`)
 ///
 /// *See SPIRIT 1 10.3 - GPIOs - Table 38 - Digital Inputs*
-#[derive(TryValued, Clone, Copy, Debug)]
+#[derive(TryValued, Clone, Copy, Debug, defmt::Format)]
 pub enum DigitalInputMode {
     /// 1 >> TX command
     #[valued(0)]
@@ -150,7 +150,7 @@ pub enum DigitalInputMode {
 /// GPIO Digital Output Selection (`GPIOx_CONF`)
 ///
 /// *See SPIRIT 1 10.3 - GPIOs - Table 37 - Digital Outputs*
-#[derive(TryValued, Clone, Copy, Debug)]
+#[derive(TryValued, Clone, Copy, Debug, defmt::Format)]
 pub enum DigitalOutputMode {
     /// nIRQ (interrupt request, active low)
     #[allow(non_camel_case_types)]

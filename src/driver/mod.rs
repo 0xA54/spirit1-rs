@@ -133,9 +133,11 @@ pub trait Spirit1Driver: Spirit1HalBlocking
 
     /// Blocking wait for `MC_STATE` to enter specified state
     fn wait_for_state(&mut self, state: SpiritState) -> RadioResult<()> {
-        trace!("wait SpiritState::xxx");
+        trace!("waiting for SpiritState::{}", state);
         // TODO: Implement timeout function
-        while Self::read_register::<McState>(self).state != state {}
+        while Self::read_register::<McState>(self).state != state {
+            self.delay_ms(100);
+        }
         // TODO Enable
 
         Ok(())
@@ -174,7 +176,6 @@ pub trait Spirit1Driver: Spirit1HalBlocking
         // Workaround for V_tune - Set `SEL_TSPLIT` to `1`
         let mut synth_config = SynthConfig::reset_value();
         synth_config.sel_tsplit = true;
-        trace!("setting SynthConfig");
         self.write_register(synth_config)?;
 
         // Calculates the offset respect to RF frequency and according
@@ -195,7 +196,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking
 
         // Disable the digital, ADC, SMPS reference clock divider if fXO > 24MHz or fXO< 26 MHz
         // TODO: Enter into Standby?
-        self.wait_for_state(SpiritState::STANDBY)?;
+        // self.wait_for_state(SpiritState::STANDBY)?;
 
         let mut rco_test_base: XoRcoTest = self.read_register();
         if self.get_xtal_frequency() < od_constants::DOUBLE_XTAL_THR {

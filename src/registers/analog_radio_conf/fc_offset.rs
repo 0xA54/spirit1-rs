@@ -12,7 +12,7 @@ use register_rs::*;
 /// ```no_run
 /// FcOffset::new(fc_offset)
 /// ```
-#[derive(Register, WriteableRegister, ReadableRegister)]
+#[derive(Register, defmt::Format, WriteableRegister, ReadableRegister)]
 #[register(address = 0x0E, length = 2, endian = "little")]
 pub struct FcOffset {
     /// Reserved

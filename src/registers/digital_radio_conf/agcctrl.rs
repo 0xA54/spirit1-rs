@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `AGCCTRL2` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x24, length = 1)]
 pub struct AgcCtrl2 {
     /// Reserved bits
@@ -14,7 +14,7 @@ pub struct AgcCtrl2 {
 
 
 /// `AGCCTRL1` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x25, length = 1)]
 pub struct AgcCtrl1 {
     /// High threshold for the AGC
@@ -26,7 +26,7 @@ pub struct AgcCtrl1 {
 }
 
 /// `AGCCTRL0` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x26, length = 1)]
 pub struct AgcCtrl0 {
     /// Enable AGC

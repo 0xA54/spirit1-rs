@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `FDEV0` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x1C, length = 1)]
 pub struct FreqDev0 {
     /// The exponent value of the frequency deviation equation (*see Equation 10*)

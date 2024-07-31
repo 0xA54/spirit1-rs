@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `RX_CTRL_FIELD` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xCE, length = 4, endian = "little")]
 pub struct RxCtrlField {
     // RX_CTRL_FIELD[3]

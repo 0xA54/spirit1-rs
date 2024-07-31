@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `TIMERS` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x53, length = 6, endian = "big")]
 pub struct Timers {
     // TIMERS[5]

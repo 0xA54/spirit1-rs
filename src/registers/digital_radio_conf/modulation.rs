@@ -4110,7 +4110,7 @@
 use register_rs::*;
 
 /// `MOD0` & `MOD1` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x1A, length = 2, endian = "little")]
 pub struct Modulation {
     /// Enable the CW transmit mode
@@ -4177,7 +4177,7 @@ impl Modulation {
     }
 }
 
-#[derive(TryValued, Clone, Debug)]
+#[derive(TryValued, Clone, Debug, defmt::Format)]
 pub enum ModulationType {
     /// 2-FSK modulation selected
     #[valued(0)]
@@ -4196,7 +4196,7 @@ pub enum ModulationType {
     Msk,
 }
 
-#[derive(Valued, Clone, Debug)]
+#[derive(Valued, Clone, Debug, defmt::Format)]
 #[valued(type = bool)]
 pub enum BtSelect {
     #[valued(false)]

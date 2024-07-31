@@ -3,7 +3,7 @@ use register_rs::*;
 /// `PM_CONFIG` register
 /// 
 /// Call with `PmConfig::new(...)`
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0xA4, length = 3, endian = "little")]
 pub struct PmConfig {
     /// Reserved

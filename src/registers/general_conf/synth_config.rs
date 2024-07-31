@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `SYNTH_CONFIG` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x9E, length = 2, endian = "little")]
 pub struct SynthConfig {
     // SYNTH_CONFIG[0]

@@ -31,7 +31,7 @@
 use register_rs::*;
 
 /// `AFC2` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x1E, length = 1)]
 pub struct Afc2 {
     /// `true`: enable the freeze AFC correction upon sync word detection
@@ -49,7 +49,7 @@ pub struct Afc2 {
 }
 
 /// `AFC1` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x1F, length = 1)]
 pub struct Afc1 {
     ///  Length of the AFC fast period
@@ -58,7 +58,7 @@ pub struct Afc1 {
 }
 
 /// `AFC0` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x20, length = 1)]
 pub struct Afc0 {
     /// AFC loop gain in fast mode (log2)
@@ -70,7 +70,7 @@ pub struct Afc0 {
 }
 
 /// AFC Mode
-#[derive(Valued, Clone, Debug)]
+#[derive(Valued, Clone, Debug, defmt::Format)]
 #[valued(type = bool)]
 pub enum AfcMode {
     /// AFC loop closed on slicer

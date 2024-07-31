@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `SYNC4` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x36, length = 1)]
 pub struct Sync4 {
     /// Sync word 4
@@ -10,7 +10,7 @@ pub struct Sync4 {
 }
 
 /// `SYNC3` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x37, length = 1)]
 pub struct Sync3 {
     /// Sync word 3
@@ -19,7 +19,7 @@ pub struct Sync3 {
 }
 
 /// `SYNC2` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x38, length = 1)]
 pub struct Sync2 {
     /// Sync word 2
@@ -28,7 +28,7 @@ pub struct Sync2 {
 }
 
 /// `SYNC1` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x39, length = 1)]
 pub struct Sync1 {
     /// Sync word 1

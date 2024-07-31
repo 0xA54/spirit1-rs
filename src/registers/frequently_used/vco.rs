@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `VCO_CONFIG` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0xA1, length = 1)]
 pub struct VcoConfig {
     /// Reserved
@@ -15,7 +15,7 @@ pub struct VcoConfig {
 
 
 /// `RCO_VCO_CALIBR_IN` register
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x6D, length = 3, endian = "little")]
 pub struct RcoVcoCalibrIn {
     // RCO_VCO_CALIBR_IN[2]
@@ -58,7 +58,7 @@ impl RcoVcoCalibrIn {
 }
 
 /// `RCO_VCO_CALIBR_OUT` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xE4, length = 2, endian = "little")]
 pub struct RcoVcoCalibrOut {
     // RCO_VCO_CALIBR_OUT[1]

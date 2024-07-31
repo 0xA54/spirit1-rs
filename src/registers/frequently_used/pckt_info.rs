@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `TX_PCKT_INFO` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xC2, length = 1)]
 pub struct TxPacketInfo {
     /// Reserved
@@ -19,7 +19,7 @@ pub struct TxPacketInfo {
 }
 
 /// `RX_PCKT_INFO` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xC3, length = 1, endian = "big")]
 pub struct RxPacketInfo {
     /// Reserved

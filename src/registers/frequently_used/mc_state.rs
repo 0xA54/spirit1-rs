@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// The `MC_STATE` register of the SPIRIT1 transceiver
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xC0, length = 2, endian = "little")]
 pub struct McState {
     // MC_STATE[1]
@@ -32,7 +32,7 @@ pub struct McState {
 
 /// SPIRIT1 States.
 /// *See [SPIRIT1](https://www.st.com/resource/en/datasheet/spirit1.pdf) Table 20 for details*
-#[derive(TryValued, PartialEq)]
+#[derive(TryValued, PartialEq, defmt::Format)]
 // #[valued(default = Invalid)]
 pub enum SpiritState {
     #[allow(unused)]

@@ -7,7 +7,7 @@ use register_rs::*;
 /// ```no_run
 /// let register = PcktLen::new(packet_length);
 /// ```
-#[derive(Register, ReadableRegister, WriteableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x34, length = 2, endian = "little")]
 pub struct PcktLen {
     /// `PCKTLEN1` register (address: `0x34`)

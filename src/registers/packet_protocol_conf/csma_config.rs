@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `CSMA_CONFIG` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x64, length = 4, endian = "little")]
 pub struct CsmaConfig {
     /// The MSB value of the counter of the seed of the random 
@@ -38,7 +38,7 @@ pub struct CsmaConfig {
 }
 
 // TODO: ?? Is this actually the values ??
-#[derive(TryValued, Clone, Debug)]
+#[derive(TryValued, Clone, Debug, defmt::Format)]
 pub enum CcaPeriod {
     #[valued(0b00)]
     T64,

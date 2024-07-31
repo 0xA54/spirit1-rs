@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `CRC_FIELD` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xCB, length = 3, endian = "little")]
 pub struct CrcField {
     // CRC_FIELD[2]

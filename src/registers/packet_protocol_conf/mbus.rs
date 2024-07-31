@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `MBUS_PRMBL` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x3B, length = 1, endian = "big")]
 pub struct MbusPRMBL {
     /// MBUS preamble length in chip sequence `01`
@@ -10,7 +10,7 @@ pub struct MbusPRMBL {
 }
 
 /// `MBUS_PSTMBL` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x3C, length = 1)]
 pub struct MbusPSTMBL {
     /// MBUS postamble length in chip sequence `01`
@@ -19,7 +19,7 @@ pub struct MbusPSTMBL {
 }
 
 /// `MBUS_CTRL` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x3D, length = 1)]
 pub struct MbusCtrl {
     /// Reserved bits
@@ -34,7 +34,7 @@ pub struct MbusCtrl {
 }
 
 /// Allowed WM-BUS Sub modes
-#[derive(TryValued, Clone)]
+#[derive(TryValued, Clone, Debug, defmt::Format)]
 pub enum MBusSubMode {
     #[valued(0)]
     S1S2LongHeader,

@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `RX_PCKT_LEN` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xC9, length = 2, endian = "little")]
 pub struct RxPcktLen {
     // RX_PCKT_LEN[1]

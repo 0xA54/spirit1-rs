@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `AFC_CORR` register
-#[derive(Register, ReadableRegister)]
+#[derive(Register, defmt::Format, ReadableRegister)]
 #[register(address = 0xC4, length = 1)]
 pub struct AfcCorr {
     /// AFC word of the received packet

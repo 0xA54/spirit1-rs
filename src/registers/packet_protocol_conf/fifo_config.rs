@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `FIFO_CONFIG` registers
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x3E, length = 4)]
 pub struct FifoConfig {
     // FIFO_CONFIG[3]

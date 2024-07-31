@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `MCU_CK_CONF` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x06, length = 1)]
 pub struct McuCkConf {
     /// The internal divider logic is running, so the MCU clock is 
@@ -21,7 +21,7 @@ pub struct McuCkConf {
 
 /// Number of extra clock cycles provided to the MCU
 /// before switching to STANDBY state
-#[derive(TryValued, Clone, Debug)]
+#[derive(TryValued, Clone, Debug, defmt::Format)]
 pub enum ClockTail {
     /// 0 extra clock cycles
     #[valued(0b00)]
@@ -38,7 +38,7 @@ pub enum ClockTail {
 }
 
 /// Divider for the RCO clock output
-#[derive(Valued, Clone, Debug)]
+#[derive(Valued, Clone, Debug, defmt::Format)]
 #[valued(type = bool)]
 pub enum RcoDividerRatio {
     /// 1

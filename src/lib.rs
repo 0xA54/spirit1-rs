@@ -92,7 +92,7 @@ pub mod prelude {
 pub trait Spirit1: SpiritPacketFormats + Spirit1Driver + SpiritIrq {}
 
 /// Error
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, defmt::Format)]
 pub enum RadioError {
     /// SpiDevice Error
     Spi,
@@ -118,6 +118,7 @@ pub trait Spirit1HalBlocking {
     fn get_xtal_frequency(&self) -> u32;
     fn get_base_frequency(&self) -> u32;
     fn get_frequency_band(&self) -> BandSelect;
+    fn delay_ms(&self, ms: u32);
 
 }
 

@@ -1,7 +1,7 @@
 use register_rs::*;
 
 /// `IF_OFFSET_ANA` register
-#[derive(New, Register, ReadableRegister, WriteableRegister)]
+#[derive(New, Register, defmt::Format, ReadableRegister, WriteableRegister)]
 #[register(address = 0x07, length = 1)]
 pub struct IfOffsetAna {
     /// Intermediate frequency setting for the analog RF synthesizer
