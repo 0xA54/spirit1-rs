@@ -5,55 +5,13 @@ fn main() {}
 
 use spirit1_rs::prelude::*;
 
-// struct DummySpiritHal();
-
-// impl Spirit1HalBlocking for DummySpiritHal {
-//     fn get_base_frequency(&self) -> u32 {
-//         433_400_000
-//     }
-
-//     fn get_frequency_band(&self) -> BandSelect {
-//         BandSelect::from_hz(self.get_base_frequency()).unwrap()
-//     }
-
-//     fn get_xtal_frequency(&self) -> u32 {
-//         50_000_000
-//     }
-
-//     fn read_register<R>(&mut self) -> R where R: Register<u8> + ReadableRegister<u8> {
-//         R::reset_value()
-//     }
-
-//     fn write_register<R>(&mut self, value: R) -> RadioResult<()> where R: WriteableRegister<u8>, [(); R::LENGTH]: Sized {
-//         let bytes = value.into_bytes().unwrap();
-//         // println!("write_register: [{:x?}] <- {:x?}", R::ADDRESS, bytes);
-//         Ok(())
-//     }
-
-//     fn write_raw(&mut self, base: u8, value: &mut [u8]) -> RadioResult<()> {
-//         // println!("write_raw: [{:x}] <- {:x?}", base, value);
-//         Ok(())
-//     }
-// }
-
-// fn main() {
-//     let mut radio = DummySpiritHal();
-
-//     _configure_radio(&mut radio).unwrap();
-//     _simple_transmitter(&mut radio).unwrap();
-// }
-
 fn _simple_transmitter(radio: &mut impl Spirit1) -> RadioResult<()> {
-    // let mut radio =
-    // Spirit1::new(spi, irq_pin, 50_000_000, 433_400_000).expect("Invalid Radio Configuration");
-
     let payload = "Hello World".as_bytes();
     _configure_radio(radio)?;
 
     // Set basic destination address
 
     // loop {
-
     // }
 
     Ok(())
