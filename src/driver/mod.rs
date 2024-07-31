@@ -228,7 +228,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking
         // TODO: Check channel center frequency is in one of the possible ranges
 
         // Calculates the data rate mantissa and exponent
-        let (e, m) = Modulation::calculate_data_rate(opts.data_rate, pd_clkdiv, self.get_xtal_frequency());
+        let (m, e) = Modulation::calculate_data_rate(opts.data_rate, pd_clkdiv, self.get_xtal_frequency());
         let modulation_reg = Modulation::new(false, opts.modulation_select, e, m);
 
         let mut fdev: FreqDev0 = self.read_register();
