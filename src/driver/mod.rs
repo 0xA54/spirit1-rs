@@ -272,7 +272,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking
         self.write_register(IfOffsetDig::new(if_offset_dig as u8))?;
 
         // Set the Digital Radio Registers
-        self.write_register(modulation_reg)?;
+        self.write_register(modulation_reg)?; // TODO: We get hung here for some reason...
         self.write_register(fdev)?;
         self.write_register(flt)?;
 
