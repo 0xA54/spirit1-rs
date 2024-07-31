@@ -5,7 +5,7 @@ use crate::{registers::*, RadioResult, RadioError};
 use crate::constants::official_driver_constants as od_constants;
 // use crate::Spirit1;
 
-pub trait SpiritIrq: Spirit1Hal
+pub trait SpiritIrq: Spirit1HalBlocking
 {
     /// De-initialize & disable all IRQs
     fn irq_silence(&mut self) -> RadioResult<()> {

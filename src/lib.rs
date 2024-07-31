@@ -55,6 +55,7 @@ pub mod prelude {
     pub use super::*;
     pub use registers::*;
     pub use register_rs::{ReadableRegister, WriteableRegister, Register};
+    pub use defmt::*;
     // pub use embedded_hal::spi::FullDuplex as SpiDevice;
     // pub use embedded_hal::digital::v2::InputPin;
 
@@ -88,7 +89,7 @@ pub mod prelude {
 
 // pub struct Spirit1();
 
-pub trait Spirit1: Spirit1Hal + SpiritPacketFormats + Spirit1Driver + SpiritIrq {}
+pub trait Spirit1: SpiritPacketFormats + Spirit1Driver + SpiritIrq {}
 
 /// Error
 #[derive(Clone, Copy, Debug)]
@@ -110,7 +111,7 @@ impl From<RegisterError> for RadioError {
     }
 }
 
-pub trait Spirit1Hal {
+pub trait Spirit1HalBlocking {
     fn read_register<R>(&mut self) -> R where R: Register<WORD> + ReadableRegister<WORD>, [(); R::LENGTH]: Sized,;
     fn write_register<R>(&mut self, value: R) -> RadioResult<()> where R: WriteableRegister<WORD>, [(); R::LENGTH]: Sized;
     fn write_raw(&mut self, base: u8, value: &mut [u8]) -> RadioResult<()>;

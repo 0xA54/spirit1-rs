@@ -5,7 +5,7 @@ use crate::{registers::*, RadioResult, RadioError};
 use crate::constants::official_driver_constants as od_constants;
 // use crate::Spirit1;
 
-pub trait SpiritPacketFormats: Spirit1Hal
+pub trait SpiritPacketFormats: Spirit1HalBlocking
 {
     fn configure_packet_protocol(&mut self, configuration: PacketConfiguration) -> RadioResult<()> {
         match configuration {

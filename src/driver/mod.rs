@@ -53,12 +53,12 @@ pub enum RxTimeoutStopCondition {
     AnyAboveThreshold,
 }
 
-impl<T> Spirit1Driver for T where T: Spirit1Hal {}
-impl<T> SpiritPacketFormats for T where T: Spirit1Hal {}
-impl<T> SpiritIrq for T where T: Spirit1Hal {}
-impl<T> Spirit1 for T where T: Spirit1Hal {}
+impl<T> Spirit1Driver for T where T: Spirit1HalBlocking {}
+impl<T> SpiritPacketFormats for T where T: Spirit1HalBlocking {}
+impl<T> SpiritIrq for T where T: Spirit1HalBlocking {}
+impl<T> Spirit1 for T where T: Spirit1HalBlocking {}
 
-pub trait Spirit1Driver: Spirit1Hal
+pub trait Spirit1Driver: Spirit1HalBlocking
 {
     /// To be called at the SHUTDOWN exit. It avoids extra current
     /// consumption at SLEEP and STANDBY.
@@ -133,6 +133,7 @@ pub trait Spirit1Driver: Spirit1Hal
 
     /// Blocking wait for `MC_STATE` to enter specified state
     fn wait_for_state(&mut self, state: SpiritState) -> RadioResult<()> {
+        trace!("wait SpiritState::xxx");
         // TODO: Implement timeout function
         while Self::read_register::<McState>(self).state != state {}
         // TODO Enable
@@ -173,6 +174,7 @@ pub trait Spirit1Driver: Spirit1Hal
         // Workaround for V_tune - Set `SEL_TSPLIT` to `1`
         let mut synth_config = SynthConfig::reset_value();
         synth_config.sel_tsplit = true;
+        trace!("setting SynthConfig");
         self.write_register(synth_config)?;
 
         // Calculates the offset respect to RF frequency and according
