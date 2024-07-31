@@ -34,6 +34,7 @@
 // This one is a bit more hand crafted...
 use register_rs::*;
 
+#[derive(defmt::Format)]
 pub struct GpioConf {
     // pub gpio_select: u8,
     _reserved_2: bool,
@@ -54,18 +55,22 @@ impl GpioConf {
 /// Default: Power on reset signal
 ///
 /// See: [`crate::registers::gpio_conf`]
+#[derive(defmt::Format)]
 pub struct Gpio0Conf(pub GpioConf);
 /// `GPIO1_CONF` register
 ///
 /// Default: Digital GND
+#[derive(defmt::Format)]
 pub struct Gpio1Conf(pub GpioConf);
 /// `GPIO2_CONF` register
 ///
 /// Default: Digital GND
+#[derive(defmt::Format)]
 pub struct Gpio2Conf(pub GpioConf);
 /// `GPIO3_CONF` register
 ///
 /// Default: Digital GND
+#[derive(defmt::Format)]
 pub struct Gpio3Conf(pub GpioConf);
 
 impl GpioConf {
