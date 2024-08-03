@@ -37,7 +37,7 @@
 // Nightly! We use generic const expressions for this driver!
 #![feature(generic_const_exprs)]
 
-use prelude::registers::BandSelect;
+use prelude::{registers::BandSelect, McState, SpiritCommand};
 use register_rs::*;
 
 pub mod registers;
@@ -52,7 +52,7 @@ pub mod prelude {
     pub use super::*;
     pub use registers::*;
     pub use register_rs::{ReadableRegister, WriteableRegister, Register};
-    pub use defmt::*;
+    pub use defmt::{error, info, trace, debug};
 }
 
 pub trait Spirit1: SpiritPacketFormats + Spirit1Driver + SpiritIrq {}
