@@ -58,8 +58,13 @@ impl<T> SpiritPacketFormats for T where T: Spirit1HalBlocking {}
 impl<T> SpiritIrq for T where T: Spirit1HalBlocking {}
 impl<T> Spirit1 for T where T: Spirit1HalBlocking {}
 
-pub trait Spirit1Driver: Spirit1HalBlocking
-{
+pub trait Spirit1Driver: Spirit1HalBlocking {
+    /// In the SPIRIT1 there are two data FIFOs, a TX FIFO for data to be transmitted and an RX.
+    /// FIFO for the received data. The length of both FIFOs is 96 bytes.
+    const MAX_FIFO_LENGTH: usize = 96;
+
+    const LINEAR_FIFO_ADDRESS: u8 = 0xFF;
+
     /// To be called at the SHUTDOWN exit. It avoids extra current
     /// consumption at SLEEP and STANDBY.
     ///
@@ -288,7 +293,53 @@ pub trait Spirit1Driver: Spirit1HalBlocking
         Ok(())
     }
 
+    fn tx_blocking(&mut self, buf: &[u8]) -> RadioResult<usize> {
+        self.write_command(SpiritCommand::FLUSH_TX_FIFO)?;
 
+        // Check TX FIFO len
+        let tx_len = if buf.len() > Self::MAX_FIFO_LENGTH {
+            Self::MAX_FIFO_LENGTH
+        } else {
+            buf.len()
+        };
+
+        self.write_raw(Self::LINEAR_FIFO_ADDRESS, &buf[..tx_len])?;
+
+        // Set payload length
+        self.write_register(PcktLen::new(tx_len as u16))?;
+
+        // TODO: SpiritManagementWaCmdStrobeTx ?
+        
+        self.write_command(SpiritCommand::TX)?;
+
+        // IMPROVEMENT: Update this behavior a bit, there's also the IRQ GPIO
+        let mut tx_data_sent = false;
+        while !tx_data_sent {
+            let irq_status: IrqStatus = self.read_register();
+            tx_data_sent = irq_status.is_set(InterruptEvent::TxDataSent);
+            self.delay_ms(1);
+        }
+
+        Ok(tx_len)
+    }
+
+    fn rx_blocking(&mut self, buffer: &mut[u8; 96]) -> RadioResult<usize> {
+        // TODO: SpiritManagementWaCmdStrobeRx ?
+        self.write_command(SpiritCommand::RX)?;
+
+        // IMPROVEMENT: Update this behavior a bit, there's also the IRQ GPIO
+        let mut rx_data_received = false;
+        while !rx_data_received {
+            let irq_status: IrqStatus = self.read_register();
+            rx_data_received = irq_status.is_set(InterruptEvent::RxDataReady);
+            self.delay_ms(1); // random, should be driven from IRQ IO
+        }
+
+        let rx_fifo_len = self.read_register::<LinearFifoStatusRxElements>().elem_rxfifo as usize;
+        self.read_raw(Self::LINEAR_FIFO_ADDRESS, rx_fifo_len, buffer)?;
+        
+        Ok(rx_fifo_len)
+    }
 }
 
 /// Main radio parameters

@@ -13,13 +13,12 @@ mod crc_field;
 mod rx_ctrl_field;
 mod rx_addr_field;
 mod fifo_status;
-
+mod command;
 mod mc_state;
 mod pckt_info;
 
 pub use mc_state::*;
 pub use pckt_info::*;
-
 pub use chnum::*;
 pub use vco::*;
 pub use aes::*;
@@ -32,3 +31,4 @@ pub use crc_field::*;
 pub use rx_ctrl_field::*;
 pub use rx_addr_field::*;
 pub use fifo_status::*;
+pub use command::*;

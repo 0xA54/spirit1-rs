@@ -80,8 +80,10 @@ impl From<RegisterError> for RadioError {
 
 pub trait Spirit1HalBlocking {
     fn read_register<R>(&mut self) -> R where R: Register<WORD> + ReadableRegister<WORD> + defmt::Format, [(); R::LENGTH]: Sized,;
+    fn read_raw(&mut self, address: u8, length: usize, buffer: &mut[u8]) -> RadioResult<()>;
     fn write_register<R>(&mut self, value: R) -> RadioResult<()> where R: WriteableRegister<WORD> + defmt::Format, [(); R::LENGTH]: Sized;
-    fn write_raw(&mut self, base: u8, value: &mut [u8]) -> RadioResult<()>;
+    fn write_raw(&mut self, base: u8, value: &[u8]) -> RadioResult<()>;
+    fn write_command(&mut self, command: SpiritCommand) -> RadioResult<McState>;
     fn get_xtal_frequency(&self) -> u32;
     fn get_base_frequency(&self) -> u32;
     fn get_frequency_band(&self) -> BandSelect;

@@ -44,8 +44,9 @@ impl IrqMaskBuilder {
         Self(0)
     }
 
-    /// Set 
+    /// Set
     pub fn set(&mut self, event: InterruptEvent) -> &mut Self {
+        // TODO: all TryFrom's are probably able to be Into for `TryValued` enums
         let mask: u32 = event.try_into().unwrap();
 
         self.0 |= mask;
@@ -130,15 +131,15 @@ impl IrqType for IrqStatus {
 }
 
 /// Interrupts
-/// In order to notify the MCU of a certain number of events an interrupt signal is generated on 
+/// In order to notify the MCU of a certain number of events an interrupt signal is generated on
 /// a selectable GPIO.
-/// 
-/// All interrupts are reported on a set of interrupt status registers and are individually 
+///
+/// All interrupts are reported on a set of interrupt status registers and are individually
 /// maskable. The interrupt status register must be cleared upon a read event from the MCU.
-/// 
-/// The status of all the interrupts is reported on the IRQ_STATUS[3:0] registers: bits are high 
-/// for the events that have generated any interrupts. The interrupts are individually maskable 
-/// using the IRQ_MASK[3:0] registers: if the mask bit related to a particular event is 
+///
+/// The status of all the interrupts is reported on the IRQ_STATUS[3:0] registers: bits are high
+/// for the events that have generated any interrupts. The interrupts are individually maskable
+/// using the IRQ_MASK[3:0] registers: if the mask bit related to a particular event is
 /// programmed at 0, that event does not generate any interrupt request.
 #[derive(TryValued)]
 #[valued(type = u32)]
@@ -173,13 +174,13 @@ pub enum InterruptEvent {
     SyncWordDetected,
     #[valued(0x00004000)]
     RssiAboveThreshold,
-    /// The interrupt flag n.15 is set (and consequently the interrupt request) only when the XO clock is 
-    /// available for the state machine. This time may be delayed compared to the actual timer 
-    /// expiration. However, the real time event can be sensed putting the end-of-counting signal on a 
+    /// The interrupt flag n.15 is set (and consequently the interrupt request) only when the XO clock is
+    /// available for the state machine. This time may be delayed compared to the actual timer
+    /// expiration. However, the real time event can be sensed putting the end-of-counting signal on a
     /// GPIO output.
     #[valued(0x00008000)]
     WakeUpTimeout,
-    /// The interrupt flag n.16 is set each time the SPIRIT1 goes to READY state and the XO has 
+    /// The interrupt flag n.16 is set each time the SPIRIT1 goes to READY state and the XO has
     /// completed its setting transient (XO ready condition detected).
     #[valued(0x00010000)]
     Ready,
