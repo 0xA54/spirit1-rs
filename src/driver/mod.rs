@@ -283,7 +283,24 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         // Set payload length
         self.write_register(PcktLen::new(tx_len as u16))?;
 
-        // TODO: SpiritManagementWaCmdStrobeTx ?
+        // TODO: if not in TX state (SpiritManagementWaCmdStrobeTx)
+        {
+            let load_cap = if self.get_frequency_band() < BandSelect::High {
+                AdditionalLoadCapacitors::Cap3p6
+            } else {
+                AdditionalLoadCapacitors::Cap0
+            };
+
+            let mut pa_power: PaPower = self.read_register();
+            pa_power.additional_load_capacitors = load_cap;
+            self.write_register(pa_power)?;
+
+            // Some magical undocumented register - apparently it enabled the VCO_L buffer
+            self.write_raw(0xA9, &[0x11])?;
+
+            // not sure why but its what the OEM driver does
+            self.write_raw(PmConfig::ADDRESS + 1, &[0x20])?;
+        }
         
         self.write_command(SpiritCommand::TX)?;
 
@@ -299,14 +316,33 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
     }
 
     fn rx_blocking(&mut self, buffer: &mut[u8; 96]) -> RadioResult<usize> {
-        // TODO: SpiritManagementWaCmdStrobeRx ?
-        self.write_command(SpiritCommand::RX)?;
+        // TODO: if not in RX state (SpiritManagementWaCmdStrobeRx)
+        let strobe_rx = |s: &mut Self| -> RadioResult<()> {
+            s.write_raw(PmConfig::ADDRESS + 1, &[0x98])?;
+
+            let mut pa_power: PaPower = s.read_register();
+            pa_power.additional_load_capacitors = AdditionalLoadCapacitors::Cap0;
+            s.write_register(pa_power)?;
+
+            s.write_command(SpiritCommand::RX)?;
+
+            Ok(())
+        };
+
+        strobe_rx(self)?;
 
         // IMPROVEMENT: Update this behavior a bit, there's also the IRQ GPIO
+        // TODO: If RX_DATA_DISCARDED or RX_TIMEOUT, re-enter RX strobe (the above code)
         let mut rx_data_received = false;
         while !rx_data_received {
             let irq_status: IrqStatus = self.read_register();
+            
             rx_data_received = irq_status.is_set(InterruptEvent::RxDataReady);
+
+            if irq_status.is_set(InterruptEvent::RxDataDiscarded) || irq_status.is_set(InterruptEvent::TimerRxTimeout) {
+                strobe_rx(self)?;
+            }
+
             self.delay_ms(1); // random, should be driven from IRQ IO
         }
 
