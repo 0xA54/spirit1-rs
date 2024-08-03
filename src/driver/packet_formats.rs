@@ -127,11 +127,11 @@ pub struct BasicAddressOpts {
 }
 
 pub struct WMBusProtocolOpts {
-    // TODO
+    // TODO Implement WMBusProtocolOps
 }
 
 pub struct STackProtocolOpts {
-    // TODO
+    // TODO Implement STackProtocolOpts
 }
 
 /// Before on-the-air transmission, raw data is properly cast into a packet structure. The 

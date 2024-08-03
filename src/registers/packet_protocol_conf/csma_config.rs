@@ -37,7 +37,8 @@ pub struct CsmaConfig {
     pub nbackoff_max: u8,
 }
 
-// TODO: ?? Is this actually the values ??
+/// code which programs the `Tcca` time (expressed as a multiple of `Tbit` 
+/// samples) between two successive CS samplings (field of the CSMA_CONFIG[1] register)
 #[derive(TryValued, Clone, Debug, defmt::Format)]
 pub enum CcaPeriod {
     #[valued(0b00)]

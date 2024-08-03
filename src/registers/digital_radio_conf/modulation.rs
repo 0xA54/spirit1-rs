@@ -4131,10 +4131,8 @@ pub struct Modulation {
     pub data_rate_m: u8,
 }
 
-// TODO: Implement compile time lookup of `e` and `m` values
-
 impl Modulation {
-    // Icky
+    // TODO: Implement compile time lookup of `e` and `m` values
     /// Returns the mantissa and exponent
     pub fn calculate_data_rate(data_rate: u32, pd_clkdiv: bool, xtal_frequency: u32) -> (u8, u8) {
         let mut found = false;
