@@ -1,7 +1,7 @@
+use super::*;
+use crate::constants::official_driver_constants as od_constants;
 use crate::prelude::*;
 use crate::registers::*;
-use crate::constants::official_driver_constants as od_constants;
-use super::*;
 
 mod packet_formats;
 pub use packet_formats::*;
@@ -86,52 +86,18 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
 
     /// Sets the RSSI threshold from its dBm value
     fn set_rssi_threshold(&mut self, dbm: i32) -> RadioResult<()> {
-        self.write_register(RssiTh::new(
-            Self::compute_rssi_threshold(dbm)
-        ))
+        self.write_register(RssiTh::new(Self::compute_rssi_threshold(dbm)))
     }
 
     /// Sets the RX timeout timer counter and prescaler from the desired
     /// value in ms. it is possible to fix the RX_Timeout to a minimum value
     /// of 50.417us to a maximum value of about 3.28s
-    fn set_rx_timeout(&mut self, ms: f32) -> RadioResult<()> {
+    fn set_rx_timeout(&mut self, timeout_counter: u8, timeout_prescaler: u8) -> RadioResult<()> {
         let mut timers: Timers = self.read_register();
 
         // I hate the STM drivers, they are such a mess. TODO: Tidy
-        (timers.rx_timeout_counter , timers.rx_timeout_prescaler) = {
-            let xtal = if self.get_xtal_frequency() > od_constants::DOUBLE_XTAL_THR {
-                self.get_xtal_frequency() >> 1
-            } else {
-                self.get_xtal_frequency()
-            } as f32;
-    
-            let n = (ms * xtal / 1210000.0) as u32; // imma gonna be sick
-    
-            if n / 0xFF > 0xFD {
-                (0xFF, 0xFF)
-            } else {
-                let mut prescaler = n / 0xFF;
-                let mut counter = n / prescaler;
-
-                // let err = ((counter * prescaler * 1210000) as f32 / xtal - ms); // TODO double check
-                let err = (counter.overflowing_mul(prescaler).0.overflowing_mul(1210000).0 as f32 / xtal - ms); // TODO double check
-
-                if counter < 255 {
-                    if (((counter + 1) * prescaler * 1210000) as f32 / xtal - ms) < err {
-                        counter += 1;
-                    }
-                }
-
-                prescaler -= 1;
-                if counter > 1 {
-                    counter -= 1;
-                } else {
-                    counter = 1;
-                }
-
-                (counter as u8, prescaler as u8)
-            }
-        };
+        (timers.rx_timeout_counter, timers.rx_timeout_prescaler) =
+            (timeout_counter, timeout_prescaler);
 
         self.write_register(timers)
     }
@@ -143,13 +109,12 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         while Self::read_register::<McState>(self).state != state {
             self.delay_ms(100);
         }
-        // TODO Enable
 
         Ok(())
     }
 
     /// Compute the RSSI threshold for a given dBm.
-    /// 
+    ///
     /// Valid range is `-130 ≤ dBm ≤ 2`. Values outside this range will be clamped
     fn compute_rssi_threshold(dbm: i32) -> u8 {
         let dbm_clamped = dbm.max(-130).min(2);
@@ -157,7 +122,10 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         2 * (dbm_clamped as u8).overflowing_add(130).0
     }
 
-    fn set_rx_timeout_stop_condition(&mut self, stop_condition: RxTimeoutStopCondition) -> RadioResult<()> {
+    fn set_rx_timeout_stop_condition(
+        &mut self,
+        stop_condition: RxTimeoutStopCondition,
+    ) -> RadioResult<()> {
         let mut pkt_opts: PcktFltOptions = self.read_register();
         let mut protocol: Protocol = self.read_register();
 
@@ -189,7 +157,9 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         // let f_offset = ((opts.xtal_offset_ppm as i32 * self.get_base_frequency() as i32)
         //     / od_constants::PPM_FACTOR)
         //     as i32;
-        let (f_offset, _) = self.get_base_frequency().overflowing_mul(opts.xtal_offset_ppm as u32);
+        let (f_offset, _) = self
+            .get_base_frequency()
+            .overflowing_mul(opts.xtal_offset_ppm as u32);
         let f_offset = f_offset as i32 / od_constants::PPM_FACTOR;
 
         // TODO: Check the parameters are valid
@@ -216,12 +186,12 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         self.wait_for_ready()?;
 
         // Calculates the FC_OFFSET parameter and cast as signed int: FOffsetTmp = (Fxtal/2^18)*FC_OFFSET
-        let xtal_offset_factor: i16 = ((f_offset * od_constants::FBASE_DIVIDER) / self.get_xtal_frequency() as i32) as i16;
+        let xtal_offset_factor: i16 =
+            ((f_offset * od_constants::FBASE_DIVIDER) / self.get_xtal_frequency() as i32) as i16;
         let fc_offset = FcOffset::new(xtal_offset_factor);
 
-        let channel_spacing: ChSpace = ChSpace::new(
-            ((opts.channel_space << 9) / (self.get_xtal_frequency() >> 6) + 1) as u8
-        );
+        let channel_spacing: ChSpace =
+            ChSpace::new(((opts.channel_space << 9) / (self.get_xtal_frequency() >> 6) + 1) as u8);
 
         // SpiritManagementWaTRxFcMem(pxSRadioInitStruct->lFrequencyBase);
 
@@ -233,29 +203,34 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         // TODO: Check channel center frequency is in one of the possible ranges
 
         // Calculates the data rate mantissa and exponent
-        let (m, e) = Modulation::calculate_data_rate(opts.data_rate, pd_clkdiv, self.get_xtal_frequency());
+        let (m, e) =
+            Modulation::calculate_data_rate(opts.data_rate, pd_clkdiv, self.get_xtal_frequency());
         let modulation_reg = Modulation::new(false, opts.modulation_select, e, m);
 
         let mut fdev: FreqDev0 = self.read_register();
-        (fdev.fdev_e, fdev.fdev_m) = FreqDev0::calculate_fdev(opts.frequency_deviation, self.get_xtal_frequency());
+        (fdev.fdev_e, fdev.fdev_m) =
+            FreqDev0::calculate_fdev(opts.frequency_deviation, self.get_xtal_frequency());
 
         let flt = ChFlt::calculate(opts.bandwidth, pd_clkdiv, self.get_xtal_frequency());
 
-        let if_offset: f32 = (3.0 * 480140.0) / ( self.get_xtal_frequency() >> 12 ) as f32 - 64.0; // #1035-D ??
-        // let if_offset_ana = if_offset.round();
+        let if_offset: f32 = (3.0 * 480140.0) / (self.get_xtal_frequency() >> 12) as f32 - 64.0; // #1035-D ??
+                                                                                                 // let if_offset_ana = if_offset.round();
         let if_offset_ana = unsafe { if_offset.to_int_unchecked::<u32>() } as f32;
 
         let if_offset_dig = if self.get_xtal_frequency() < od_constants::DOUBLE_XTAL_THR {
             if_offset_ana
         } else {
             // ((3.0 * 480140.0) / ( self.get_xtal_frequency() >> 13 ) as f32 - 64.0 ).round()
-           ( unsafe { ((3.0 * 480140.0) / ( self.get_xtal_frequency() >> 13 ) as f32 - 64.0 ).to_int_unchecked::<u32>() } as f32 )
+            (unsafe {
+                ((3.0 * 480140.0) / (self.get_xtal_frequency() >> 13) as f32 - 64.0)
+                    .to_int_unchecked::<u32>()
+            } as f32)
         };
 
         self.write_register(IfOffsetAna::new(if_offset_ana as u8))?;
 
         // Set the XTal Flag
-        let xtal_flag_fn = | freq: u32 | freq >= 25_000_000;
+        let xtal_flag_fn = |freq: u32| freq >= 25_000_000;
 
         // true for 26, false for 24
         let frequency_select = if self.get_xtal_frequency() > od_constants::DOUBLE_XTAL_THR {
@@ -277,7 +252,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         self.write_register(IfOffsetDig::new(if_offset_dig as u8))?;
 
         // Set the Digital Radio Registers
-        self.write_register(modulation_reg)?; // TODO: We get hung here for some reason...
+        self.write_register(modulation_reg)?;
         self.write_register(fdev)?;
         self.write_register(flt)?;
 
@@ -386,5 +361,47 @@ impl Default for RadioInitOpts {
             frequency_deviation: 20_000,
             bandwidth: 1_005_000,
         }
+    }
+}
+
+// TODO Check if this outputs the correct values
+pub const fn calculate_rx_timeout(timeout_ms: u32, xtal_frequency: u32) -> (u8, u8) {
+    let xtal = if xtal_frequency > od_constants::DOUBLE_XTAL_THR {
+        xtal_frequency >> 1
+    } else {
+        xtal_frequency
+    };
+
+    let n = timeout_ms.overflowing_mul(xtal).0 / 1210000; // imma gonna be sick
+
+    if n / 0xFF > 0xFD {
+        return (0xFF, 0xFF);
+    } else {
+        let mut prescaler = n / 0xFF;
+        let mut counter = n / prescaler;
+
+        let err = (counter
+            .overflowing_mul(prescaler)
+            .0
+            .overflowing_mul(1210000)
+            .0
+            / xtal)
+            .overflowing_sub(timeout_ms)
+            .0;
+
+        if counter < 255 {
+            if (((counter + 1) * prescaler * 1210000) / xtal - timeout_ms) < err {
+                counter += 1;
+            }
+        }
+
+        prescaler -= 1;
+        if counter > 1 {
+            counter -= 1;
+        } else {
+            counter = 1;
+        }
+
+        return (counter as u8, prescaler as u8);
     }
 }
