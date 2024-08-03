@@ -15,19 +15,19 @@ pub struct PmConfig {
     pub en_ts_buffer: bool,
 
     /// `false`: enable internal SMPS, `true`: disable internal SMPS
-    #[register(bit = "2", reset = false)]
+    #[register(bit = "5", reset = false)]
     pub disable_smps: bool,
 
     /// Reserved
-    #[register(bit = "3", reset = false)]
+    #[register(bit = "4", reset = false)]
     _reserved_1: bool,
 
     /// Sets the SMPS Vtune voltage
-    #[register(bit = "4", reset = true)]
+    #[register(bit = "3", reset = true)]
     pub set_smps_vtune: bool,
 
     /// Sets the SMPS bandwidth
-    #[register(bit = "3", reset = true)]
+    #[register(bit = "2", reset = true)]
     pub set_smps_pllbw: bool,
 
     /// Reserved
@@ -36,16 +36,16 @@ pub struct PmConfig {
 
     /// `false`: divider by 4 enabled (SMPS' switching frequency is `FSW=FOSC/4`),
     /// `true`: rate multiplier enabled (SMPS' switching frequency is `FSW=KRM*FOSC/(2^15)`
-    #[register(bit = "8", reset = false)]
+    #[register(bit = "15", reset = false)]
     pub en_rm: bool,
 
     /// KRM[14:8]
-    #[register(bits = "9..15", reset = 0b0100000)]
-    krm_msb: u8,
+    #[register(bits = "8..14", reset = 0b0100000)]
+    pub krm_msb: u8,
 
     /// KRM[7:0]
     #[register(bits = "16..23", reset = 0)]
-    krm_lsb: u8,
+    pub krm_lsb: u8,
 }
 
 impl PmConfig {
