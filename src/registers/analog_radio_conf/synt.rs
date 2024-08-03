@@ -21,28 +21,28 @@ pub struct Synt {
 }
 
 /// Synthesizer band select factor as described in `Equation 5`
-#[derive(Debug, TryValued, Clone, defmt::Format)]
+#[derive(Debug, TryValued, Clone, defmt::Format, PartialEq, PartialOrd)]
 pub enum BandSelect {
-    /// High band (from 779MHz to 956MHz)
-    ///
-    /// Band select factor 6 (BS=1)
-    #[valued(1)]
-    High,
-    /// Middle band (from 387MHz to 470Mhz)
-    ///
-    /// Band select factor 12 (BS=3)
-    #[valued(3)]
-    Middle,
-    /// Low band (from 300MHz to 348MHz)
-    ///
-    /// Band select factor 16 (BS=4)
-    #[valued(4)]
-    Low,
     /// Very low band (169MHz)
     ///
     /// Band select factor 32 (BS=5)
     #[valued(5)]
     VeryLow,
+    /// Low band (from 300MHz to 348MHz)
+    ///
+    /// Band select factor 16 (BS=4)
+    #[valued(4)]
+    Low,
+    /// Middle band (from 387MHz to 470Mhz)
+    ///
+    /// Band select factor 12 (BS=3)
+    #[valued(3)]
+    Middle,
+    /// High band (from 779MHz to 956MHz)
+    ///
+    /// Band select factor 6 (BS=1)
+    #[valued(1)]
+    High,
 }
 
 impl BandSelect {
