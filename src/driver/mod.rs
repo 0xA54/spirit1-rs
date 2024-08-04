@@ -93,7 +93,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
     /// value in ms. it is possible to fix the RX_Timeout to a minimum value
     /// of 50.417us to a maximum value of about 3.28s
     fn set_rx_timeout(&mut self, timeout_counter: u8, timeout_prescaler: u8) -> RadioResult<()> {
-        let mut timers: Timers = self.read_register();
+        let mut timers: Timers = self.read_register()?;
 
         // I hate the STM drivers, they are such a mess. TODO: Tidy
         (timers.rx_timeout_counter, timers.rx_timeout_prescaler) =
@@ -106,7 +106,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
     fn wait_for_state(&mut self, state: SpiritState) -> RadioResult<()> {
         trace!("waiting for SpiritState::{}", state);
         // TODO: Implement timeout function
-        while Self::read_register::<McState>(self).state != state {
+        while Self::read_register::<McState>(self)?.state != state {
             self.delay_ms(100);
         }
 
@@ -117,6 +117,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
     ///
     /// Valid range is `-130 ≤ dBm ≤ 2`. Values outside this range will be clamped
     fn compute_rssi_threshold(dbm: i32) -> u8 {
+        trace!("Compute RSSI: {}", dbm);
         let dbm_clamped = dbm.max(-130).min(2);
 
         2 * (dbm_clamped as u8).overflowing_add(130).0
@@ -126,8 +127,8 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         &mut self,
         stop_condition: RxTimeoutStopCondition,
     ) -> RadioResult<()> {
-        let mut pkt_opts: PcktFltOptions = self.read_register();
-        let mut protocol: Protocol = self.read_register();
+        let mut pkt_opts: PcktFltOptions = self.read_register()?;
+        let mut protocol: Protocol = self.read_register()?;
 
         pkt_opts.rx_timeout_and_or_select = (TryInto::<u8>::try_into(stop_condition)? & 0x08) > 1;
 
@@ -173,7 +174,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         // TODO: Enter into Standby?
         // self.wait_for_state(SpiritState::STANDBY)?;
 
-        let mut rco_test_base: XoRcoTest = self.read_register();
+        let mut rco_test_base: XoRcoTest = self.read_register()?;
         if self.get_xtal_frequency() < od_constants::DOUBLE_XTAL_THR {
             rco_test_base.pd_clkdiv = true; // DISABLED
         } else {
@@ -196,7 +197,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         // SpiritManagementWaTRxFcMem(pxSRadioInitStruct->lFrequencyBase);
 
         // 2nd order DEM algorithm enabling
-        let mut if_offset_dig: IfOffsetDig = self.read_register();
+        let mut if_offset_dig: IfOffsetDig = self.read_register()?;
         if_offset_dig.if_offset_dig &= !0x02;
         self.write_register(if_offset_dig)?;
 
@@ -207,7 +208,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
             Modulation::calculate_data_rate(opts.data_rate, pd_clkdiv, self.get_xtal_frequency());
         let modulation_reg = Modulation::new(false, opts.modulation_select, e, m);
 
-        let mut fdev: FreqDev0 = self.read_register();
+        let mut fdev: FreqDev0 = self.read_register()?;
         (fdev.fdev_e, fdev.fdev_m) =
             FreqDev0::calculate_fdev(opts.frequency_deviation, self.get_xtal_frequency());
 
@@ -239,7 +240,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
             xtal_flag_fn(self.get_xtal_frequency())
         };
 
-        let mut conf: AnaFuncConf = self.read_register();
+        let mut conf: AnaFuncConf = self.read_register()?;
         conf.frequency_select = FrequencySelect::from(frequency_select);
         self.write_register(conf)?;
 
@@ -257,7 +258,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         self.write_register(flt)?;
 
         // Enable the freeze option of the AFC on the SYNC word
-        let mut afc2: Afc2 = self.read_register();
+        let mut afc2: Afc2 = self.read_register()?;
         afc2.afc_freeze_on_sync = true;
         self.write_register(afc2)?;
 
@@ -291,7 +292,7 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
                 AdditionalLoadCapacitors::Cap0
             };
 
-            let mut pa_power: PaPower = self.read_register();
+            let mut pa_power: PaPower = self.read_register()?;
             pa_power.additional_load_capacitors = load_cap;
             self.write_register(pa_power)?;
 
@@ -301,26 +302,27 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
             // not sure why but its what the OEM driver does
             self.write_raw(PmConfig::ADDRESS + 1, &[0x20])?;
         }
-        
+
         self.write_command(SpiritCommand::TX)?;
 
         // IMPROVEMENT: Update this behavior a bit, there's also the IRQ GPIO
         let mut tx_data_sent = false;
         while !tx_data_sent {
-            let irq_status: IrqStatus = self.read_register();
+            let irq_status: IrqStatus = self.read_register()?;
+            debug!("{}", irq_status);
             tx_data_sent = irq_status.is_set(InterruptEvent::TxDataSent);
-            self.delay_ms(1);
+            self.delay_ms(1000);
         }
 
         Ok(tx_len)
     }
 
-    fn rx_blocking(&mut self, buffer: &mut[u8; 96]) -> RadioResult<usize> {
+    fn rx_blocking(&mut self, buffer: &mut [u8; 96]) -> RadioResult<usize> {
         // TODO: if not in RX state (SpiritManagementWaCmdStrobeRx)
         let strobe_rx = |s: &mut Self| -> RadioResult<()> {
             s.write_raw(PmConfig::ADDRESS + 1, &[0x98])?;
 
-            let mut pa_power: PaPower = s.read_register();
+            let mut pa_power: PaPower = s.read_register()?;
             pa_power.additional_load_capacitors = AdditionalLoadCapacitors::Cap0;
             s.write_register(pa_power)?;
 
@@ -335,20 +337,24 @@ pub trait Spirit1Driver: Spirit1HalBlocking {
         // TODO: If RX_DATA_DISCARDED or RX_TIMEOUT, re-enter RX strobe (the above code)
         let mut rx_data_received = false;
         while !rx_data_received {
-            let irq_status: IrqStatus = self.read_register();
-            
+            let irq_status: IrqStatus = self.read_register()?;
+
             rx_data_received = irq_status.is_set(InterruptEvent::RxDataReady);
 
-            if irq_status.is_set(InterruptEvent::RxDataDiscarded) || irq_status.is_set(InterruptEvent::TimerRxTimeout) {
+            if irq_status.is_set(InterruptEvent::RxDataDiscarded)
+                || irq_status.is_set(InterruptEvent::TimerRxTimeout)
+            {
                 strobe_rx(self)?;
             }
 
             self.delay_ms(1); // random, should be driven from IRQ IO
         }
 
-        let rx_fifo_len = self.read_register::<LinearFifoStatusRxElements>().elem_rxfifo as usize;
+        let rx_fifo_len = self
+            .read_register::<LinearFifoStatusRxElements>()?
+            .elem_rxfifo as usize;
         self.read_raw(Self::LINEAR_FIFO_ADDRESS, rx_fifo_len, buffer)?;
-        
+
         Ok(rx_fifo_len)
     }
 }

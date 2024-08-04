@@ -17,8 +17,8 @@
 //! fn example(spi: impl SpiDevice) {
 //!     let mut radio = Spirit1::new(spi);
 //! 
-//!     let mc_state: McState = radio.read_register();
-//!     let device_info: DeviceInfo = radio.read_register();
+//!     let mc_state: McState = radio.read_register()?;
+//!     let device_info: DeviceInfo = radio.read_register()?;
 //! 
 //!     println!("Radio version {}", device_info.version);
 //! }

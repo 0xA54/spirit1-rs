@@ -15,13 +15,13 @@ pub trait SpiritPacketFormats: Spirit1HalBlocking
     }
 
     fn configure_basic_filter(&mut self, opts: BasicAddressOpts) -> RadioResult<()> {
-        let mut flt_opts: PcktFltOptions = self.read_register();
+        let mut flt_opts: PcktFltOptions = self.read_register()?;
         flt_opts.dest_vs_source_addr = opts.filter_on_my_address;
         flt_opts.dest_vs_multicast_addr = opts.filter_on_multicast_address;
         flt_opts.dest_vs_broadcast_addr = opts.filter_on_broadcast_address;
         self.write_register(flt_opts)?;
 
-        let mut goals: PcktFltGoals = self.read_register();
+        let mut goals: PcktFltGoals = self.read_register()?;
         goals.broadcast = opts.broadcast_address;
         goals.multicast = opts.multicast_address;
         goals.tx_source_addr = opts.my_address;
@@ -31,11 +31,11 @@ pub trait SpiritPacketFormats: Spirit1HalBlocking
     }
 
     fn configure_basic(&mut self, opts: BasicProtocolOpts) -> RadioResult<()> {
-        let mut protocol: Protocol = self.read_register();
+        let mut protocol: Protocol = self.read_register()?;
         protocol.auto_pckt_flt = true;
         self.write_register(protocol)?;
 
-        let mut flt_opts: PcktFltOptions = self.read_register();
+        let mut flt_opts: PcktFltOptions = self.read_register()?;
         flt_opts.source_filtering = true;
         flt_opts.control_filtering = true;
         flt_opts.crc_check = if opts.crc_mode == CrcMode::NoCrc { false } else { true };
