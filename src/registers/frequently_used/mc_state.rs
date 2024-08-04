@@ -27,7 +27,7 @@ pub struct McState {
     pub xo_operating: bool,
     /// Current MC state. See Table 20 or [`SpiritState`]
     #[register(bits = "9..15", reset = SpiritState::Invalid)]
-    pub state: SpiritState
+    pub state: SpiritState,
 }
 
 /// SPIRIT1 States.
@@ -51,5 +51,5 @@ pub enum SpiritState {
     #[valued(0x5F)]
     TX,
     #[valued(0x00)]
-    Invalid
+    Invalid,
 }
